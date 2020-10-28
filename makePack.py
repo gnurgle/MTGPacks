@@ -37,19 +37,19 @@ def make_m19_pack():
 
 	#Note here, booster needs to be updated when changed to Bit for all
 	#Mythic Rare
-	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'm19' AND Booster = '1' AND Rarity = 'mythic'")
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'm19' AND Booster = 1 AND Rarity = 'mythic'")
 	mythic_rows = cur.fetchall()
 	#Rare
-	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'm19' AND Booster = '1' AND Rarity = 'rare'")
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'm19' AND Booster = 1 AND Rarity = 'rare'")
 	rare_rows = cur.fetchall()
 	#Uncommon
-	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'm19' AND Booster = '1' AND Rarity = 'uncommon'")
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'm19' AND Booster = 1 AND Rarity = 'uncommon'")
 	uncommon_rows = cur.fetchall()
 	#Common - Needs to be updated once land is a Bit column
-	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'm19' AND Booster = '1' AND Rarity = 'common'")
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'm19' AND Booster = 1 AND Rarity = 'common' AND Is_Land = 0")
 	common_rows = tuple(cur.fetchall())
 	#Land - Needs to be updated once land is a Bit column
-	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'm19' AND Booster = '1' AND (Name = 'Plains' OR Name = 'Island' OR Name = 'Mountain' OR Name = 'Swamp' OR Name = 'Forest')")
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'm19' AND Booster = 1 AND Is_Land = 1")
 	land_rows = cur.fetchall()
 	#print (tuple(land_rows[1:4][1]))
 	booster_pack = []
@@ -66,7 +66,7 @@ def make_m19_pack():
 		foil_rows = tuple(cur.fetchall())
 		booster_pack.append(random.choice(foil_rows))
 	elif foil_count == 1 and foil_type == "land":
-		cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'm19' AND Booster = '1' AND (Name = 'Plains' OR Name = 'Island' OR Name = 'Mountain' OR Name = 'Swamp' OR Name = 'Forest')")
+		cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'm19' AND Booster = 1 AND Is_Land = 1")
 		foil_rows = cur.fetchall()
 		booster_pack.append(random.choice(foil_rows))
 
@@ -81,7 +81,8 @@ def make_m19_pack():
 		else:
 			output_pack.append(booster_pack[i])
 
-	return (output_pack)
+	out_pack = output_pack_info(pack_size, foil_count, output_pack)
+	return (out_pack)
 
 #Determine whether rare or mythic
 def check_rare_mythic(r_c, m_c):
@@ -118,7 +119,43 @@ def foil_rarity(c_c, u_c, r_c, m_c, l_c):
 		return "land"
 	else:
 		return "mythic"
- 
+
+def output_pack_info(num_c, f_c, pack):
+
+	#So, here's what needs to be done
+	#First entry is num of cards, position of foil if one, empty, empty
+	#Rest of entry is scryfall, num of sides, front, back or empty
+
+	output_info = []
+	info_entry = []
+
+	#Create first entry
+	info_entry.append(num_c)
+	if f_c > 0:
+		info_entry.append(num_c-1)
+	else:
+		info_entry.append(0)
+	#Add two empty slots	
+	info_entry.append("empty")
+	info_entry.append("empty")
+
+	#Add info_entry to output_info
+	output_info.append(info_entry) 
+	#Open DB to fetch and attach card Images
+	conn = sql.connect('mtg_db.db')
+	cur = conn.cursor()
+
+	for i in range(0,num_c):
+		#Mythic Rare
+		cur.execute("SELECT Scryfall_ID, Num_Sides, Front_Image, Back_Image FROM Card_Images WHERE Scryfall_Id = ?", (pack[i][1],))
+		info_entry = cur.fetchall()
+		#info_entry[0][4] = pack[i][0]
+		output_info.append(info_entry)
+
+	print (output_info)
+	return output_info
+	
+
 if __name__ == '__main__':
 	make_m19_pack()
 

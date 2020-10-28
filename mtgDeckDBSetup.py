@@ -9,13 +9,14 @@ Rarity Char(10),\
 Color CHAR(15),\
 Tcg_Id INT,\
 Layout CHAR(15),\
-Booster CHAR(10),\
+Booster BIT,\
 Scryfall_Id CHAR(70),\
 Price FLOAT,\
 Price_Foil FLOAT,\
 Has_Foil BIT,\
 Has_NonFoil BIT,\
 Is_Promo BIT,\
+Is_Land BIT,\
 Image_Url CHAR(70),\
 PRIMARY KEY(Number, Name, Set_Id))')
 

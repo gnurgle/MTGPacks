@@ -44,6 +44,15 @@ def fetch_card(setName):
 		response = requests.post(url, json=fetchDict)
 
 		r = json.loads(response.content.decode())
+
+		#Check if land and set flag
+		if r['data'][0]['type_line'] == "Land":
+			is_land = True
+		elif r['data'][0]['type_line'][:10] == "Basic Land":
+			is_land = True
+		else:
+			is_land = False
+		
 		#Fetch relevant card Data
 		#name, set, numer, rarity, color_identity, tcgplayer_id, layout, booster, uri, prices, foil
 		print("Collector Number = " + r['data'][0]['collector_number'])
@@ -56,31 +65,30 @@ def fetch_card(setName):
 		#print("Booster = " + str(r['data'][0]['booster']))
 		print("UniqueID = " + str(r['data'][0]['uri'][31:]))
 		#print("Prices = " + str(r['data'][0]['prices']['usd']))
-		#print("Prices Foil= " + str(r['data'][0]['prices']['usd_foil']))
+		#print("Prices Foil= " #+ str(r['data'][0]['prices']['usd_foil']))
 		#print("Has foil? = " + str(r['data'][0]['foil']))
 		#print("Has nonfoil? = " + str(r['data'][0]['nonfoil']))
 		#print("Is promo? = " + str(r['data'][0]['promo']))
-		
-		
-
 		#Write to DB---------------------------------------------------
 		cur = conn.cursor()
-		
+
 		cur.execute("INSERT OR IGNORE INTO Card \
-		(Number, Name, Set_Id, Rarity, Color, Tcg_Id, Layout, Booster, \
+		(Number, Name, Set_Id, Rarity, Color, Layout, Booster, \
 		Scryfall_Id, Price, Price_Foil, Has_Foil, Has_NonFoil, \
-		Is_Promo) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",\
+		Is_Promo, Is_Land) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",\
 		(r['data'][0]['collector_number'], r['data'][0]['name'], r['data'][0]['set'], \
-		r['data'][0]['rarity'], str(r['data'][0]['color_identity']), r['data'][0]['tcgplayer_id'], \
-		r['data'][0]['layout'], r['data'][0]['booster'], r['data'][0]['uri'][31:], r['data'][0]['prices']['usd'], \
+		r['data'][0]['rarity'], str(r['data'][0]['color_identity']), \
+		r['data'][0]['layout'], int(r['data'][0]['booster']), \
+		r['data'][0]['uri'][31:], r['data'][0]['prices']['usd'], \
 		r['data'][0]['prices']['usd_foil'], int(r['data'][0]['foil']), int(r['data'][0]['nonfoil']), \
-		int(r['data'][0]['promo'])))
+		int(r['data'][0]['promo']), int(is_land)))
 
 		conn.commit()
 
 		#Wait per API specifications
 		time.sleep(.120)
-	
+
+	pull_card_images(setName)
 
 def pull_card_images(setName):
 
@@ -126,4 +134,4 @@ def pull_card_images(setName):
 		time.sleep(.120) 
 
 if __name__== '__main__':
-	pull_card_images("m19")
+	fetch_card("m19")
