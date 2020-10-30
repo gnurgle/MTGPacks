@@ -7,6 +7,13 @@
   height: 510px;
   width: 360px;
   border-radius:10px;
+  float: left;  
+  /* Set the depth of the elements */
+  -webkit-perspective: 800px;
+  -moz-perspective: 800px;
+  -o-perspective: 800px;
+  perspective: 800px;
+
 }
 
 .normal {mix-blend-mode: normal;}
@@ -29,6 +36,75 @@
 .saturation {mix-blend-mode: saturation;}
 .color {mix-blend-mode: color;}
 .luminosity {mix-blend-mode: luminosity;}
+.flip-card {
+  background-color: transparent;
+  width: 360px;
+  height: 510px;
+  perspective: 1000px;
+  float:left;
+}
+.animation {
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  -ms-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.card {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  cursor: pointer;
+  
+  
+  /* Set the transition effects */
+  -webkit-transition: -webkit-transform 0.4s;
+  -moz-transition: -moz-transform 0.4s;
+  -o-transition: -o-transform 0.4s;
+  transition: transform 0.4s;
+  -webkit-transform-style: preserve-3d;
+  -moz-transform-style: preserve-3d;
+  -o-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+.card.flipped {
+  -webkit-transform: rotateY( 180deg );
+  -moz-transform: rotateY( 180deg );
+  -o-transform: rotateY( 180deg );
+  transform: rotateY( 180deg );
+}
+
+.card .front,
+.card .back {
+  display: block;
+  height: 100%;
+  width: 100%;
+  line-height: 260px;
+  color: white;
+  text-align: center;
+  font-size: 4em;
+  position: absolute;
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  -o-backface-visibility: hidden;
+  backface-visibility: hidden;
+  
+  box-shadow: 3px 5px 20px 2px rgba(0, 0, 0, 0.25);
+}
+
+.card .front {
+  background: #222222;
+}
+
+.card .back {
+  background: #444444;
+  -webkit-transform: rotateY( 180deg );
+  -moz-transform: rotateY( 180deg );
+  -o-transform: rotateY( 180deg );
+  transform: rotateY( 180deg );
+}
 </style>
 	</head>
 	<body>
@@ -43,13 +119,24 @@
 			<p>Test display images</p>
 				<div>			
 				{% for card in cards %}
+				<div class="container">
+  					<div class="card">
+						<div class="front">
+						<img src = "/static/img/back.jpg" style="width:360px;height:510px;border-radius:10px"/>
+						</div>
+						<div class="back">
 					{% if loop.index == info[1] %}
-						<img src = "https://www.slightlymagic.net/forum/download/file.php?id=3458&mode=view" width="360px" height="510px" style="width:360px;height:510px;border-radius:10px;background-image:url('{{card[0][2]}}');background-size:360px 510px;mix-blend-mode:overlay;"/>
+						<img src = "/static/img/foil.png" width="360px" height="510px" style="width:360px;height:510px;border-radius:10px;background-image:url('{{card[0][2]}}');background-size:360px 510px;"/>
 					{% else %}
 						<img src = "{{card[0][2]}}" style="width:360px;height:510px;border-radius:10px"/>			
-					{% endif %}			
+					{% endif %}	
+						</div>
+	    			</div>
+    			</div>
 				{% endfor %}
     			</div>
-
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="/static/js/hover-flip.js"></script>	
 	</body>
+
 </html>
