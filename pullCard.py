@@ -74,13 +74,12 @@ def fetch_card(setName):
 
 		cur.execute("INSERT OR IGNORE INTO Card \
 		(Number, Name, Set_Id, Rarity, Color, Layout, Booster, \
-		Scryfall_Id, Price, Price_Foil, Has_Foil, Has_NonFoil, \
-		Is_Promo, Is_Land) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",\
+		Scryfall_Id, Has_Foil, Has_NonFoil, \
+		Is_Promo, Is_Land) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",\
 		(r['data'][0]['collector_number'], r['data'][0]['name'], r['data'][0]['set'], \
 		r['data'][0]['rarity'], str(r['data'][0]['color_identity']), \
 		r['data'][0]['layout'], int(r['data'][0]['booster']), \
-		r['data'][0]['uri'][31:], r['data'][0]['prices']['usd'], \
-		r['data'][0]['prices']['usd_foil'], int(r['data'][0]['foil']), int(r['data'][0]['nonfoil']), \
+		r['data'][0]['uri'][31:], int(r['data'][0]['foil']), int(r['data'][0]['nonfoil']), \
 		int(r['data'][0]['promo']), int(is_land)))
 
 		conn.commit()

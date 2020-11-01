@@ -4,10 +4,11 @@
 		<title>Test Display for Cards</title>
 <style>
 .container {
-  height: 510px;
-  width: 360px;
+  height: 340px;
+  width: 240px;
   border-radius:10px;
-  float: left;  
+  float: left;
+  margin: 20px;    
   /* Set the depth of the elements */
   -webkit-perspective: 800px;
   -moz-perspective: 800px;
@@ -38,8 +39,8 @@
 .luminosity {mix-blend-mode: luminosity;}
 .flip-card {
   background-color: transparent;
-  width: 360px;
-  height: 510px;
+  width: 240px;
+  height: 340px;
   perspective: 1000px;
   float:left;
 }
@@ -57,6 +58,22 @@
   position: absolute;
   cursor: pointer;
   
+  /* Set the transition effects */
+  -webkit-transition: -webkit-transform 0.4s;
+  -moz-transition: -moz-transform 0.4s;
+  -o-transition: -o-transform 0.4s;
+  transition: transform 0.4s;
+  -webkit-transform-style: preserve-3d;
+  -moz-transform-style: preserve-3d;
+  -o-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+.card_click {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  cursor: pointer;
   
   /* Set the transition effects */
   -webkit-transition: -webkit-transform 0.4s;
@@ -75,27 +92,34 @@
   -o-transform: rotateY( 180deg );
   transform: rotateY( 180deg );
 }
+.card_click.flipped {
+  -webkit-transform: rotateY( 180deg );
+  -moz-transform: rotateY( 180deg );
+  -o-transform: rotateY( 180deg );
+  transform: rotateY( 180deg );
+}
 
 .card .front,
-.card .back {
+.card .back{
   display: block;
   height: 100%;
   width: 100%;
-  line-height: 260px;
-  color: white;
+  line-height: 20px;
+  color: black;
+  text-align: bottom;
   text-align: center;
-  font-size: 4em;
+  font-size: 150%;
   position: absolute;
   -webkit-backface-visibility: hidden;
   -moz-backface-visibility: hidden;
   -o-backface-visibility: hidden;
   backface-visibility: hidden;
-  
   box-shadow: 3px 5px 20px 2px rgba(0, 0, 0, 0.25);
 }
 
 .card .front {
   background: #222222;
+  border-radius:10px;
 }
 
 .card .back {
@@ -104,35 +128,89 @@
   -moz-transform: rotateY( 180deg );
   -o-transform: rotateY( 180deg );
   transform: rotateY( 180deg );
+  border-radius:10px;
+}
+
+.card_click .front,
+.card_click .back{
+  display: block;
+  height: 100%;
+  width: 100%;
+  line-height: 20px;
+  color: black;
+  text-align: bottom;
+  text-align: center;
+  font-size: 150%;
+  position: absolute;
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  -o-backface-visibility: hidden;
+  backface-visibility: hidden;
+  box-shadow: 3px 5px 20px 2px rgba(0, 0, 0, 0.25);
+}
+
+.card_click .front {
+  background: #222222;
+  border-radius:10px;
+}
+
+.card_click .back {
+  background: #444444;
+  -webkit-transform: rotateY( 180deg );
+  -moz-transform: rotateY( 180deg );
+  -o-transform: rotateY( 180deg );
+  transform: rotateY( 180deg );
+  border-radius:10px;
+}
+
+.button-show{
+}
+
+.caption {
+	float:bottom;
+	display:block;
 }
 </style>
 	</head>
 	<body>
+		<div class="button-show">HERE IT IS???????</div>
 		<div>
 			<p>Test display of information:</p>
 			<ul>
 				{% for card in cards %}
 				<li>{{ card[0] }}</li>
 				{% endfor %}
+				{{ info[2] }}
 			</ul>
 		</div>
 			<p>Test display images</p>
 				<div>			
 				{% for card in cards %}
 				<div class="container">
+					{% if loop.index == info[1] %}
+  					<div class="card_click">
+					{% elif loop.index == 14 %}
+  					<div class="card_click">
+  					{% elif loop.index == 13 and info[1] > 0 %}
+  					<div class="card_click">  					
+  					{% else %}
   					<div class="card">
+					{% endif %}
 						<div class="front">
-						<img src = "/static/img/back.jpg" style="width:360px;height:510px;border-radius:10px"/>
+						<img src = "/static/img/back.jpg" style="width:240px;height:340px;border-radius:10px"/>
 						</div>
 						<div class="back">
 					{% if loop.index == info[1] %}
-						<img src = "/static/img/foil.png" width="360px" height="510px" style="width:360px;height:510px;border-radius:10px;background-image:url('{{card[0][2]}}');background-size:360px 510px;"/>
+						<img src = "/static/img/foil.png" width="240px" height="340px" style="width:240px;height:340px;border-radius:10px;background-image:url('{{card[0][2]}}');background-size:240px 340px;"/>
 					{% else %}
-						<img src = "{{card[0][2]}}" style="width:360px;height:510px;border-radius:10px"/>			
-					{% endif %}	
+						<img src = "{{card[0][2]}}" style="width:240px;height:340px;border-radius:10px"/>			
+					{% endif %}
+						$ {{ card[0][4] }}
 						</div>
+						</div>	
 	    			</div>
     			</div>
+
 				{% endfor %}
     			</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

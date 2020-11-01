@@ -8,6 +8,7 @@ app = Flask(__name__)
 
 def index():
 	cards_list = make_m19_pack()
+
 	return render_template("index.html", cards = list(cards_list[1:]), info = list(cards_list[0])) 
 
 if __name__ == "__main__":

@@ -35,7 +35,6 @@ def make_m19_pack():
 	#conn.row_factory = sql.Row
 	cur = conn.cursor()
 
-	#Note here, booster needs to be updated when changed to Bit for all
 	#Mythic Rare
 	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'm19' AND Booster = 1 AND Rarity = 'mythic'")
 	mythic_rows = cur.fetchall()
@@ -45,13 +44,12 @@ def make_m19_pack():
 	#Uncommon
 	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'm19' AND Booster = 1 AND Rarity = 'uncommon'")
 	uncommon_rows = cur.fetchall()
-	#Common - Needs to be updated once land is a Bit column
+	#Common
 	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'm19' AND Booster = 1 AND Rarity = 'common' AND Is_Land = 0")
 	common_rows = tuple(cur.fetchall())
-	#Land - Needs to be updated once land is a Bit column
+	#Land
 	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'm19' AND Booster = 1 AND Is_Land = 1")
 	land_rows = cur.fetchall()
-	#print (tuple(land_rows[1:4][1]))
 	booster_pack = []
 
 	booster_pack.append(random.choices(common_rows, k=common_count))
@@ -120,15 +118,34 @@ def foil_rarity(c_c, u_c, r_c, m_c, l_c):
 	else:
 		return "mythic"
 
+#This is for single foil packs
 def output_pack_info(num_c, f_c, pack):
 
-	#So, here's what needs to be done
-	#First entry is num of cards, position of foil if one, empty, empty
-	#Rest of entry is scryfall, num of sides, front, back or empty
+	#Last entry is num of cards, position of foil if one, total_price, empty, empty
+	#Rest of entry is scryfall, num of sides, front, back or empty, price
 
 	output_info = []
 	info_entry = []
+	subtotal = 0
+	#Open DB to fetch and attach card Images
+	conn = sql.connect('mtg_db.db')
+	cur = conn.cursor()
 
+	for i in range(0,num_c):
+		#Mythic Rare
+		if i == 13 and f_c > 0:
+			cur.execute("SELECT Scryfall_ID, Num_Sides, Front_Image, Back_Image, Price_Foil FROM Card_Images WHERE Scryfall_Id = ?", (pack[i][1],))
+		else:
+			cur.execute("SELECT Scryfall_ID, Num_Sides, Front_Image, Back_Image, Price FROM Card_Images WHERE Scryfall_Id = ?", (pack[i][1],))
+
+		info_entry = cur.fetchall()
+		#info_entry[0][4] = pack[i][0]
+		#
+		output_info.append(info_entry)
+		subtotal = subtotal + info_entry[0][4]
+
+	#Clear info_entry
+	info_entry = []
 	#Create first entry
 	info_entry.append(num_c)
 	if f_c > 0:
@@ -136,23 +153,12 @@ def output_pack_info(num_c, f_c, pack):
 	else:
 		info_entry.append(0)
 	#Add two empty slots	
+	info_entry.append(subtotal)
 	info_entry.append("empty")
 	info_entry.append("empty")
-
 	#Add info_entry to output_info
-	output_info.append(info_entry) 
-	#Open DB to fetch and attach card Images
-	conn = sql.connect('mtg_db.db')
-	cur = conn.cursor()
-
-	for i in range(0,num_c):
-		#Mythic Rare
-		cur.execute("SELECT Scryfall_ID, Num_Sides, Front_Image, Back_Image FROM Card_Images WHERE Scryfall_Id = ?", (pack[i][1],))
-		info_entry = cur.fetchall()
-		#info_entry[0][4] = pack[i][0]
-		output_info.append(info_entry)
-
-	print (output_info)
+	output_info.insert(0,info_entry) 
+	
 	return output_info
 	
 
