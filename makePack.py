@@ -82,6 +82,252 @@ def make_m19_pack():
 	out_pack = output_pack_info(pack_size, foil_count, output_pack)
 	return (out_pack)
 
+#Temporary for now for proof of concept
+def make_war_pack():
+
+	#Pack properties
+	pack_size = 15
+	land_count = 1
+	common_count = 10
+	uncommon_count = 3
+	r_mr_count = 1
+	foil_count = 0
+	rare_chance = 7
+	mythic_chance = 1
+	#Foil breakdown
+	foil_chance = 24
+	foil_common = 88
+	foil_uncommon = 24
+	foil_rare = 7
+	foil_mythic = 1
+	foil_land = 8
+	foil_type = ""
+
+	if check_foil(foil_chance):
+		common_count = common_count - 1
+		foil_count = 1
+		print ("This pack has a foil")
+		foil_type = (foil_rarity(foil_common, foil_uncommon, foil_rare, foil_mythic, foil_land))
+		print (foil_type)
+	else:
+		print ("This pack has no foil :(")
+
+	#Make lists of rarity types
+	conn = sql.connect('mtg_db.db')
+	#conn.row_factory = sql.Row
+	cur = conn.cursor()
+
+	#Mythic Rare
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'war' AND Booster = 1 AND Rarity = 'mythic'")
+	mythic_rows = cur.fetchall()
+	#Rare
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'war' AND Booster = 1 AND Rarity = 'rare'")
+	rare_rows = cur.fetchall()
+	#Uncommon
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'war' AND Booster = 1 AND Rarity = 'uncommon'")
+	uncommon_rows = cur.fetchall()
+	#Common
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'war' AND Booster = 1 AND Rarity = 'common' AND Is_Land = 0")
+	common_rows = tuple(cur.fetchall())
+	#Land
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'war' AND Booster = 1 AND Is_Land = 1")
+	land_rows = cur.fetchall()
+	booster_pack = []
+
+	booster_pack.append(random.choices(common_rows, k=common_count))
+	booster_pack.append(random.choices(uncommon_rows, k=uncommon_count))
+	if check_rare_mythic(rare_chance, mythic_chance) == "rare":
+		booster_pack.append(random.choice(rare_rows))
+	else:
+		booster_pack.append(random.choice(mythic_rows))
+
+	if foil_count == 1 and foil_type != "land":
+		cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'war' AND Booster = '1' AND Rarity = ? AND Has_Foil = 1",(foil_type,))
+		foil_rows = tuple(cur.fetchall())
+		booster_pack.append(random.choice(foil_rows))
+	elif foil_count == 1 and foil_type == "land":
+		cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'war' AND Booster = 1 AND Is_Land = 1")
+		foil_rows = cur.fetchall()
+		booster_pack.append(random.choice(foil_rows))
+
+	booster_pack.append(random.choice(land_rows))
+
+	#Strip internal lists out of booster list
+	output_pack = []
+	for i in range(0,len(booster_pack)):
+		if len(booster_pack[i]) > 2:
+			for j in range(0,len(booster_pack[i])):
+				output_pack.append(booster_pack[i][j])
+		else:
+			output_pack.append(booster_pack[i])
+
+	out_pack = output_pack_info(pack_size, foil_count, output_pack)
+	return (out_pack)
+
+#Temporary for now for proof of concept
+def make_rix_pack():
+
+	#Pack properties
+	pack_size = 15
+	land_count = 1
+	common_count = 10
+	uncommon_count = 3
+	r_mr_count = 1
+	foil_count = 0
+	rare_chance = 7
+	mythic_chance = 1
+	#Foil breakdown
+	foil_chance = 24
+	foil_common = 88
+	foil_uncommon = 24
+	foil_rare = 7
+	foil_mythic = 1
+	foil_land = 8
+	foil_type = ""
+
+	if check_foil(foil_chance):
+		common_count = common_count - 1
+		foil_count = 1
+		print ("This pack has a foil")
+		foil_type = (foil_rarity(foil_common, foil_uncommon, foil_rare, foil_mythic, foil_land))
+		print (foil_type)
+	else:
+		print ("This pack has no foil :(")
+
+	#Make lists of rarity types
+	conn = sql.connect('mtg_db.db')
+	#conn.row_factory = sql.Row
+	cur = conn.cursor()
+
+	#Mythic Rare
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'rix' AND Booster = 1 AND Rarity = 'mythic'")
+	mythic_rows = cur.fetchall()
+	#Rare
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'rix' AND Booster = 1 AND Rarity = 'rare'")
+	rare_rows = cur.fetchall()
+	#Uncommon
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'rix' AND Booster = 1 AND Rarity = 'uncommon'")
+	uncommon_rows = cur.fetchall()
+	#Common
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'rix' AND Booster = 1 AND Rarity = 'common' AND Is_Land = 0")
+	common_rows = tuple(cur.fetchall())
+	#Land
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'rix' AND Booster = 1 AND Is_Land = 1")
+	land_rows = cur.fetchall()
+	booster_pack = []
+
+	booster_pack.append(random.choices(common_rows, k=common_count))
+	booster_pack.append(random.choices(uncommon_rows, k=uncommon_count))
+	if check_rare_mythic(rare_chance, mythic_chance) == "rare":
+		booster_pack.append(random.choice(rare_rows))
+	else:
+		booster_pack.append(random.choice(mythic_rows))
+
+	if foil_count == 1 and foil_type != "land":
+		cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'rix' AND Booster = '1' AND Rarity = ? AND Has_Foil = 1",(foil_type,))
+		foil_rows = tuple(cur.fetchall())
+		booster_pack.append(random.choice(foil_rows))
+	elif foil_count == 1 and foil_type == "land":
+		cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'rix' AND Booster = 1 AND Is_Land = 1")
+		foil_rows = cur.fetchall()
+		booster_pack.append(random.choice(foil_rows))
+
+	booster_pack.append(random.choice(land_rows))
+
+	#Strip internal lists out of booster list
+	output_pack = []
+	for i in range(0,len(booster_pack)):
+		if len(booster_pack[i]) > 2:
+			for j in range(0,len(booster_pack[i])):
+				output_pack.append(booster_pack[i][j])
+		else:
+			output_pack.append(booster_pack[i])
+
+	out_pack = output_pack_info(pack_size, foil_count, output_pack)
+	return (out_pack)
+	
+#Temporary for now for proof of concept
+def make_mh1_pack():
+
+	#Pack properties
+	pack_size = 15
+	land_count = 1
+	common_count = 10
+	uncommon_count = 3
+	r_mr_count = 1
+	foil_count = 0
+	rare_chance = 7
+	mythic_chance = 1
+	#Foil breakdown
+	foil_chance = 24
+	foil_common = 88
+	foil_uncommon = 24
+	foil_rare = 7
+	foil_mythic = 1
+	foil_land = 8
+	foil_type = ""
+
+	if check_foil(foil_chance):
+		common_count = common_count - 1
+		foil_count = 1
+		print ("This pack has a foil")
+		foil_type = (foil_rarity(foil_common, foil_uncommon, foil_rare, foil_mythic, foil_land))
+		print (foil_type)
+	else:
+		print ("This pack has no foil :(")
+
+	#Make lists of rarity types
+	conn = sql.connect('mtg_db.db')
+	#conn.row_factory = sql.Row
+	cur = conn.cursor()
+
+	#Mythic Rare
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'mh1' AND Booster = 1 AND Rarity = 'mythic'")
+	mythic_rows = cur.fetchall()
+	#Rare
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'mh1' AND Booster = 1 AND Rarity = 'rare'")
+	rare_rows = cur.fetchall()
+	#Uncommon
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'mh1' AND Booster = 1 AND Rarity = 'uncommon'")
+	uncommon_rows = cur.fetchall()
+	#Common
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'mh1' AND Booster = 1 AND Rarity = 'common' AND Is_Land = 0")
+	common_rows = tuple(cur.fetchall())
+	#Land
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'mh1' AND Booster = 1 AND Is_Land = 1")
+	land_rows = cur.fetchall()
+	booster_pack = []
+
+	booster_pack.append(random.choices(common_rows, k=common_count))
+	booster_pack.append(random.choices(uncommon_rows, k=uncommon_count))
+	if check_rare_mythic(rare_chance, mythic_chance) == "rare":
+		booster_pack.append(random.choice(rare_rows))
+	else:
+		booster_pack.append(random.choice(mythic_rows))
+
+	if foil_count == 1 and foil_type != "land":
+		cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'mh1' AND Booster = '1' AND Rarity = ? AND Has_Foil = 1",(foil_type,))
+		foil_rows = tuple(cur.fetchall())
+		booster_pack.append(random.choice(foil_rows))
+	elif foil_count == 1 and foil_type == "land":
+		cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = 'mh1' AND Booster = 1 AND Is_Land = 1")
+		foil_rows = cur.fetchall()
+		booster_pack.append(random.choice(foil_rows))
+
+	booster_pack.append(random.choice(land_rows))
+
+	#Strip internal lists out of booster list
+	output_pack = []
+	for i in range(0,len(booster_pack)):
+		if len(booster_pack[i]) > 2:
+			for j in range(0,len(booster_pack[i])):
+				output_pack.append(booster_pack[i][j])
+		else:
+			output_pack.append(booster_pack[i])
+
+	out_pack = output_pack_info(pack_size, foil_count, output_pack)
+	return (out_pack)
+
 #Determine whether rare or mythic
 def check_rare_mythic(r_c, m_c):
 	#total chance possibility

@@ -1,0 +1,18 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Test Display for Cards{% endblock %}
+{% block styles %}
+{{super()}}
+	<link rel="stylesheet" href="/static/css/cards.css"> 
+	<link rel="stylesheet" href="/static/css/main_body.css"> 
+{% endblock %}
+
+{% block content%}
+{{super()}}
+<input type="button" id="btn" value="refresh" onclick = "reload();"/>
+<div id=="card_container">
+<iframe id = "card_box_frame" frameborder='' noresize='noresize' scrolling ="no" style='display: block; margin: 0 auto;width: 1040px; height: 850px' src="http://127.0.0.1:5000/pullPack" frameborder="0"></iframe></div>
+{% endblock %}
+{% block scripts %} 
+	{{super()}}
+	<script src="/static/js/hover-flip.js"></script>	
+{% endblock %}

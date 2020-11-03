@@ -1,0 +1,99 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Test Display for Cards{% endblock %}
+{% block styles %}
+{{super()}}
+	<link rel="stylesheet" href="/static/css/cards.css"> 
+	<link rel="stylesheet" href="/static/css/main_body.css">
+	<link rel="stylesheet" href="/static/css/navbar.css">
+{% endblock %}
+{% block navbar %}
+<nav class="navbar navbar-inverse " role="navigation">
+ <div class="bar_nav">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+    </div>
+    <a class="navbar-brand" href="#">Brand</a>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="navbar-collapse-1">
+     
+      <ul class="nav navbar-nav navbar-left">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">User <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">History</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="/">Home</a></li>
+        <li><a href="#">News</a></li>
+        <li><a href="/pickPack">Pick Packs</a></li>
+        <li><a href="#">Leaderboard</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+</div><!-- /.navbar-container -->
+</nav>
+
+{% endblock %}
+{% block content%}
+{{super()}}
+		<img src = "/static/img/m19.jpg" style="position:absolute;display:block;width:1040px; height:850px;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%)" />
+		<div id="superout">
+		<div id="outbox" style="margin:auto;width:1040px;height:850px;">
+				<div id="card_box">			
+				{% for card in cards %}
+				<div class="container">
+					{% if loop.index == info[1] %}
+  					<div class="card_click">
+					{% elif loop.index == 14 %}
+  					<div class="card_click">
+  					{% elif loop.index == 13 and info[1] > 0 %}
+  					<div class="card_click">  					
+  					{% else %}
+  					<div class="card">
+					{% endif %}
+						<div class="front">
+						<img src = "/static/img/back.jpg" style="width:180px;height:255px;border-radius:10px"/>
+						</div>
+						<div class="back">
+					{% if loop.index == info[1] %}
+						<img src = "/static/img/foil.png" width="180px" height="255px" style="width:180px;height:255px;border-radius:8px;background-image:url('{{card[0][2]}}');background-size:180px 255px;"/>
+					{% else %}
+						<img src = "{{card[0][2]}}" style="width:180px;height:255px;border-radius:8px"/>			
+					{% endif %}
+						$ {{ card[0][4] }}
+						</div>
+						</div>	
+	    			</div>
+
+				{% endfor %}
+    			</div>
+    			</div>
+		<input type="button" id="btn" value="refresh" onclick = "reload();addTotal({{info[2]}});addPackPrice(3.99);getProfit();" style="margin:0 auto;display:block;" />
+    			</div>
+		<div id="statbox" style="margin-right: 300 px">
+    			<kbd>The total earned is: $<kbd class="counter counter-default" data-value="1.00" data-decimals="2">0.00</kbd> </kbd>
+		</div>
+		<div id="statbox" style="margin-right: 300 px">
+    			<kbd>The total spent is: $<kbd class="pack_counter counter-default" data-value="1.00" data-decimals="2">0.00</kbd> </kbd>
+		</div>
+		<div id="statbox" style="margin-right: 300 px">
+    			<kbd>The total profit is: $<kbd class="profit_counter counter-default" data-value="1.00" data-decimals="2">0.00</kbd> </kbd>
+		</div>
+{% endblock %}
+{% block scripts %} 
+	{{super()}}	
+	<script src="/static/js/hover-flip.js"></script>
+	<script src="/static/js/jquery.countimator.min.js"></script>
+
+{% endblock %}

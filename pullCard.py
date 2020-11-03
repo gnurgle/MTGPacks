@@ -36,7 +36,6 @@ def fetch_card(setName):
 	}
 
 	conn = sql.connect('mtg_db.db')
-
 	for i in range(1,setSize):
 
 		fetchDict['identifiers'][0]['collector_number'] = str(i)
@@ -133,4 +132,4 @@ def pull_card_images(setName):
 		time.sleep(.120) 
 
 if __name__== '__main__':
-	fetch_card("m19")
+	fetch_card("rix")

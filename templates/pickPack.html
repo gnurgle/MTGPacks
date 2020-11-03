@@ -1,13 +1,14 @@
 {% extends "bootstrap/base.html" %}
-{% block title %}Test Display for Cards{% endblock %}
+{% block title %}Test Display for Pack Selection{% endblock %}
 {% block styles %}
 {{super()}}
 	<link rel="stylesheet" href="/static/css/main_body.css">
 	<link rel="stylesheet" href="/static/css/navbar.css">
+	<link rel="stylesheet" href="/static/css/jquery.flipster.css">
 {% endblock %}
 {% block navbar %}
 <nav class="navbar navbar-inverse " role="navigation">
- <div class="bar_nav">
+ <div class="container">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
@@ -47,10 +48,34 @@
 {% block content%}
 {{super()}}
 
+    <div class="coverflow">
+        <ul class="flip-items">
+            <li data-flip-title="Rivals of Ixalan" data-flip-category="2018">
+				<a href="/rixPack">
+                <img src="static/img/rix_pack.png" style="height:600px;width:auto;">
+				</a>
+             </li>
+            <li data-flip-title="Core 2019" data-flip-category="2019">
+				<a href="/m19Pack">
+                <img src="static/img/m19_pack.png" style="height:600px; width:auto;">
+				</a>
+            </li>
+            <li data-flip-title="War of the Sparks" data-flip-category="2019">
+				<a href="/warPack">
+                <img src="static/img/war_pack.png" style="height:600px; width:auto;">
+				</a>
+            </li>
+            <li data-flip-title="Modern Horizons" data-flip-category="2019">
+				<a href="/mh1Pack">
+                <img src="static/img/mh1_pack.png" style="height:600px; width:auto;">
+				</a>
+            </li>
+        </ul>
+    </div>
+
 {% endblock %}
 {% block scripts %} 
 	{{super()}}	
-	<script src="/static/js/hover-flip.js"></script>
-	<script src="/static/js/jquery.countimator.min.js"></script>
-
+	<script src="/static/js/jquery.flipster.min.js"></script>
+	<script src="/static/js/pack.js"></script>
 {% endblock %}
