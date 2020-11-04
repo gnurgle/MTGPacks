@@ -1,13 +1,11 @@
 import json
 import requests
 import time
-import sqlite3 as sql
+import mysql.connector as sql
 
 
 def fetch_card(setName):
 	
-	
-
 	#Fetch M19 Set and pull data from it
 	url = "https://api.scryfall.com/sets/" + setName
 
@@ -35,7 +33,17 @@ def fetch_card(setName):
 		]
 	}
 
-	conn = sql.connect('mtg_db.db')
+	#Connect to DB
+	conn = sql.connect(
+		host="localhost",
+		user="",
+		password="",
+		database = "mtg_db"
+	)
+	#Override setSizes for specific sets with issues
+	if setName == "war":
+		setSize = 275
+		
 	for i in range(1,setSize):
 
 		fetchDict['identifiers'][0]['collector_number'] = str(i)
@@ -45,9 +53,9 @@ def fetch_card(setName):
 		r = json.loads(response.content.decode())
 
 		#Check if land and set flag
-		if r['data'][0]['type_line'] == "Land":
+		if r['data'][0]['type_line'][:4] == "Land":
 			is_land = True
-		elif r['data'][0]['type_line'][:10] == "Basic Land":
+		elif r['data'][0]['type_line'][:5] == "Basic":
 			is_land = True
 		else:
 			is_land = False
@@ -71,10 +79,8 @@ def fetch_card(setName):
 		#Write to DB---------------------------------------------------
 		cur = conn.cursor()
 
-		cur.execute("INSERT OR IGNORE INTO Card \
-		(Number, Name, Set_Id, Rarity, Color, Layout, Booster, \
-		Scryfall_Id, Has_Foil, Has_NonFoil, \
-		Is_Promo, Is_Land) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",\
+		cur.execute("INSERT IGNORE INTO Card \
+		(Number, Name, Set_Id, Rarity, Color, Layout, Booster, Scryfall_Id, Has_Foil, Has_NonFoil, Is_Promo, Is_Land) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",\
 		(r['data'][0]['collector_number'], r['data'][0]['name'], r['data'][0]['set'], \
 		r['data'][0]['rarity'], str(r['data'][0]['color_identity']), \
 		r['data'][0]['layout'], int(r['data'][0]['booster']), \
@@ -86,23 +92,33 @@ def fetch_card(setName):
 		#Wait per API specifications
 		time.sleep(.120)
 
+	cur.close()
+	conn.close()
+
 	pull_card_images(setName)
 
 def pull_card_images(setName):
 
 	#Connect to DB to fetch cards images to be added/refreshed
-	conn = sql.connect('mtg_db.db')
-	conn.row_factory = sql.Row
+	conn = sql.connect(
+		host="localhost",
+		user="",
+		password="",
+		database = "mtg_db"
+	)
+
+
+	#conn.row_factory = sql.Row
 	cur = conn.cursor()
 
 	#Select ScryfallIDs And layout of cards in set
-	cur.execute("SELECT Scryfall_Id from Card WHERE Set_Id = ?",(setName,))
+	cur.execute("SELECT Scryfall_Id from Card WHERE Set_Id = %s",(setName,))
 	rows = cur.fetchall()
 
-	conn.close()
+	#conn.close()
 
-	conn = sql.connect('mtg_db.db')
-	cur = conn.cursor()
+	#conn = sql.connect('mtg_db.db')
+	#cur = conn.cursor()
 
 	
 	for i in range (0,len(rows)):
@@ -118,18 +134,15 @@ def pull_card_images(setName):
 			num_sides = 1
 			back_image = None
 
-		cur.execute("INSERT OR REPLACE INTO Card_Images \
-		(Scryfall_ID, Num_Sides, Front_Image, Back_Image) \
-		VALUES (?,?,?,?)",(str(rows[i][0]),num_sides,url,back_image))
+		cur.execute("INSERT IGNORE INTO Card_Images (Scryfall_ID, Num_Sides, Front_Image, Back_Image) VALUES (%s,%s,%s,%s)", (str(rows[i][0]),num_sides,url,back_image))
 
 		conn.commit()
-		
-		print (i)
-		print (num_sides)
-		print (url)
-		print (str(back_image)) 
+
+		print (str(i+1) + " of " + str(len(rows)) + " images processed ...")
 		#Wait per API specifications
 		time.sleep(.120) 
 
+	cur.close()
+	conn.close()
 if __name__== '__main__':
-	fetch_card("rix")
+	fetch_card("dom")
