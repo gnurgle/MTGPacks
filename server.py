@@ -1,6 +1,11 @@
 import os
-from flask import Flask, render_template
+import requests
+import json
+import mysql.connector as sql
+from flask import Flask, render_template, request, redirect, url_for
 from makePack import make_pack_a
+from pullCard import fetch_card
+from fetch_prices import fetch_prices
 from flask_bootstrap import Bootstrap
 
 
@@ -73,14 +78,111 @@ def xlnPack():
 	p_img = "/static/img/xln.jpg"
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
-
-
 @app.route("/pickPack")
 def pickPack():
 
-	return render_template("pickPack.html") 
-	
+	return render_template("pickPack.html")
 
+#Add a Set
+@app.route('/admin/addSet')
+def new_set():
+	return render_template('addSet.html')
+
+#Set add request Form
+@app.route("/admin/setAdded", methods = ['POST','GET'])
+def addSet():
+
+	#Check for POST
+	if request.method == 'POST':
+
+		#Pull data from form
+		set_id = request.form["Set_Id"]
+		price = request.form["Booster_Price"]
+		size = request.form["Pack_Size"]
+		land = request.form["Land"]
+		cmn = request.form["Common"]
+		unc = request.form["Uncommon"]
+		ra_my = request.form["Rare_Mythic"]
+		r_cnc = request.form["Rare_Chance"]
+		m_cnc = request.form["Mythic_Chance"]
+		f_cnc = request.form["Foil_Chance"]
+		f_cmn = request.form["Foil_Common"]
+		f_unc = request.form["Foil_Uncommon"]
+		f_rar = request.form["Foil_Rare"]
+		f_my = request.form["Foil_Mythic"]
+		f_land = request.form["Foil_Land"]
+
+	#Fetch Set and pull misc data from it
+	url = "https://api.scryfall.com/sets/" + set_id
+
+	response = requests.get(url)
+
+	r = json.loads(response.content.decode())
+	set_name =  r['name']
+	year = str(r['released_at'])[:4]
+	num_cards = r['card_count']
+ 
+	setSize = r['card_count']
+	#Connect to DB
+	conn = sql.connect(
+		host="localhost",
+		user="gnurgle",
+		password="ALR6K66EAA",
+		database="mtg_db"
+		)
+	cur = conn.cursor()
+
+	#Insert data from forms into appropriate places
+	cur.execute("INSERT IGNORE INTO Sets VALUES \
+		(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"\
+		,(set_id,set_name,year,num_cards,price,size,land,cmn,unc,ra_my,r_cnc,m_cnc,f_cnc,f_cmn,f_unc,f_rar,f_my,f_land))
+	#Commit to DB
+	conn.commit()
+	cur.close()
+	conn.close()
+	return render_template('addSet.html')
+
+#Pull a Set
+@app.route('/admin/pullSet')
+def pull_set():
+
+	#Connect to DB
+	conn = sql.connect(
+		host="localhost",
+		user="gnurgle",
+		password="ALR6K66EAA",
+		database="mtg_db"
+	)
+	cur = conn.cursor()
+
+	#Select Set information
+	cur.execute("SELECT Set_Id, Set_Name FROM Sets")
+	rows = cur.fetchall()
+
+	cur.close()
+	conn.close()
+	return render_template("pullSet.html", choices = list(rows)) 
+
+#Set Pull request Form
+@app.route("/admin/setPulled/<set_id>")
+def setPulled(set_id):
+	sets = request.args.get('set_id','')
+	fetch_card(set_id)
+
+	return redirect("/admin/pullSet") 
+
+#Fetch Prices
+@app.route("/admin/fetchPrices")
+def fetchPrices():
+
+	fetch_prices()
+	return redirect("/admin/pullSet") 
+
+#Fetch Prices
+@app.route("/test")
+def testingpage():
+
+	return render_template("test.html") 
 
 if __name__ == "__main__":
 	app.run(debug = True)

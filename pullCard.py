@@ -36,8 +36,8 @@ def fetch_card(setName):
 	#Connect to DB
 	conn = sql.connect(
 		host="localhost",
-		user="",
-		password="",
+		user="gnurgle",
+		password="ALR6K66EAA",
 		database = "mtg_db"
 	)
 	#Override setSizes for specific sets with issues
@@ -102,8 +102,8 @@ def pull_card_images(setName):
 	#Connect to DB to fetch cards images to be added/refreshed
 	conn = sql.connect(
 		host="localhost",
-		user="",
-		password="",
+		user="gnurgle",
+		password="ALR6K66EAA",
 		database = "mtg_db"
 	)
 

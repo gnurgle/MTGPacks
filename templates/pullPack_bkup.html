@@ -19,7 +19,7 @@
       </button>
       
     </div>
-    <a class="navbar-brand" href="#">Brand</a>
+    <a class="navbar-brand" href="#">MTGPacks</a>
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="navbar-collapse-1">
      
@@ -47,7 +47,7 @@
 {% endblock %}
 {% block content%}
 {{super()}}
-		<img src = "/static/img/m19.jpg" style="position:absolute;display:block;width:1040px; height:850px;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%)" />
+		<img src = "{{pack_image}}" style="position:absolute;display:block;width:1040px; height:850px;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%)" />
 		<div id="superout">
 		<div id="outbox" style="margin:auto;width:1040px;height:850px;">
 				<div id="card_box">			
@@ -79,7 +79,7 @@
 				{% endfor %}
     			</div>
     			</div>
-		<input type="button" id="btn" value="refresh" onclick = "reload();addTotal({{info[2]}});addPackPrice(3.99);getProfit();" style="margin:0 auto;display:block;" />
+		<input type="button" id="btn" value="refresh" onclick = "addTotal({{info[2]}});addPackPrice(3.99);getProfit();storePack('{{pack_name}}');reload()" style="margin:0 auto;display:block;" />
     			</div>
 		<div id="statbox" style="margin-right: 300 px">
     			<kbd>The total earned is: $<kbd class="counter counter-default" data-value="1.00" data-decimals="2">0.00</kbd> </kbd>

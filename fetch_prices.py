@@ -12,8 +12,8 @@ def fetch_prices():
 	#Connect to DB and pull all Scryfall_Id
 	conn = sql.connect(
 		host="localhost",
-		user="",
-		password="",
+		user="gnurgle",
+		password="ALR6K66EAA",
 		database="mtg_db"
 	)
 	

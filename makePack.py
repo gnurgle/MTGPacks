@@ -9,23 +9,37 @@ def make_pack_a(setN):
 
 	#Set Set Name
 	setName=setN
+	#Connect to DB
+	#conn = sql.connect('mtg_db.db')
+	conn = sql.connect(
+		host="localhost",
+		user="gnurgle",
+		password="ALR6K66EAA",
+		database="mtg_db"
+	)
+
+	cur = conn.cursor()
+
+	#Get Set information
+	cur.execute("SELECT Pack_size, Land, Common, Uncommon, Rare_Mythic, Rare_Chance, Mythic_chance, Foil_Chance, Foil_Common, Foil_Uncommon, Foil_Rare, Foil_Mythic, Foil_Land FROM Sets WHERE Set_Id = %s",(setName,))
+	rows = cur.fetchall()
 
 	#Pack properties
-	pack_size = 15
-	land_count = 1
-	common_count = 10
-	uncommon_count = 3
-	r_mr_count = 1
+	pack_size = rows[0][0]
+	land_count = rows[0][1]
+	common_count = rows[0][2]
+	uncommon_count = rows[0][3]
+	r_mr_count = rows[0][4]
 	foil_count = 0
-	rare_chance = 7
-	mythic_chance = 1
+	rare_chance = rows[0][5]
+	mythic_chance = rows[0][6]
 	#Foil breakdown
-	foil_chance = 24
-	foil_common = 88
-	foil_uncommon = 24
-	foil_rare = 7
-	foil_mythic = 1
-	foil_land = 8
+	foil_chance = rows[0][7]
+	foil_common = rows[0][8]
+	foil_uncommon = rows[0][9]
+	foil_rare = rows[0][10]
+	foil_mythic = rows[0][11]
+	foil_land = rows[0][12]
 	foil_type = ""
 
 	if check_foil(foil_chance):
@@ -38,23 +52,11 @@ def make_pack_a(setN):
 		print ("This pack has no foil :(")
 
 	#Make lists of rarity types
-
-	#Connect to DB
-	#conn = sql.connect('mtg_db.db')
-	conn = sql.connect(
-		host="localhost",
-		user="",
-		password="",
-		database="mtg_db"
-	)
-
-	cur = conn.cursor()
-
 	#Mythic Rare
-	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = %s AND Booster = 1 AND Rarity = 'mythic' AND Is_Land = 0",(setName,))
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = %s AND Booster = 1 AND Rarity = 'mythic'",(setName,))
 	mythic_rows = cur.fetchall()
 	#Rare
-	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = %s AND Booster = 1 AND Rarity = 'rare' AND Is_Land = 0",(setName,))
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = %s AND Booster = 1 AND Rarity = 'rare'",(setName,))
 	rare_rows = cur.fetchall()
 	#Uncommon
 	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = %s AND Booster = 1 AND Rarity = 'uncommon' AND Is_Land = 0",(setName,))
@@ -63,19 +65,26 @@ def make_pack_a(setN):
 	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = %s AND Booster = 1 AND Rarity = 'common' AND Is_Land = 0",(setName,))
 	common_rows = tuple(cur.fetchall())
 	#Land
-	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = %s AND Booster = 1 AND Is_Land = 1",(setName,))
+	cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = %s AND Booster = 1 AND Is_Land = 1 AND Rarity = 'common'",(setName,))
 	land_rows = cur.fetchall()
 	booster_pack = []
 
-	booster_pack.append(random.choices(common_rows, k=common_count))
-	booster_pack.append(random.choices(uncommon_rows, k=uncommon_count))
+	#Shuffle rows, prevents duplicates vs random.choice
+	common_shuffled = random.sample(common_rows, len(common_rows))
+	uncommon_shuffled = random.sample(uncommon_rows, len(uncommon_rows))
+	#random.shuffle(common_rows)
+	#random.shuffle(uncommon_rows)
+	booster_pack.append(common_shuffled[:common_count])
+	booster_pack.append(uncommon_shuffled[:uncommon_count])
+
+	#random.choice okay for single cards
 	if check_rare_mythic(rare_chance, mythic_chance) == "rare":
 		booster_pack.append(random.choice(rare_rows))
 	else:
 		booster_pack.append(random.choice(mythic_rows))
 
 	if foil_count == 1 and foil_type != "land":
-		cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = %s AND Booster = '1' AND Rarity = %s AND Has_Foil = 1",(setName,foil_type))
+		cur.execute("SELECT Name, Scryfall_ID FROM Card WHERE Set_Id = %s AND Booster = 1 AND Rarity = %s AND Has_Foil = 1",(setName,foil_type))
 		foil_rows = tuple(cur.fetchall())
 		booster_pack.append(random.choice(foil_rows))
 	elif foil_count == 1 and foil_type == "land":
@@ -96,7 +105,7 @@ def make_pack_a(setN):
 		else:
 			output_pack.append(booster_pack[i])
 
-	out_pack = output_pack_info(pack_size, foil_count, output_pack)
+	out_pack = output_pack_info(pack_size, foil_count, output_pack, setName)
 	return (out_pack)
 
 #Determine whether rare or mythic
@@ -136,9 +145,9 @@ def foil_rarity(c_c, u_c, r_c, m_c, l_c):
 		return "mythic"
 
 #This is for single foil packs
-def output_pack_info(num_c, f_c, pack):
+def output_pack_info(num_c, f_c, pack, setID):
 
-	#Last entry is num of cards, position of foil if one, total_price, empty, empty
+	#Last entry is num of cards, position of foil if one, total_price, setprice, empty
 	#Rest of entry is scryfall, num of sides, front, back or empty, price
 
 	output_info = []
@@ -147,8 +156,8 @@ def output_pack_info(num_c, f_c, pack):
 	#Open DB to fetch and attach card Images
 	conn = sql.connect(
 		host="localhost",
-		user="",
-		password="",
+		user="gnurgle",
+		password="ALR6K66EAA",
 		database="mtg_db"
 	)
 
@@ -176,8 +185,12 @@ def output_pack_info(num_c, f_c, pack):
 		info_entry.append(0)
 	#Add two empty slots	
 	info_entry.append(subtotal)
-	info_entry.append("empty")
-	info_entry.append("empty")
+
+	#Grab price of Pack and add
+	cur.execute("SELECT Booster_Price FROM Sets WHERE Set_ID = %s",(setID,))
+	setPrice = cur.fetchall()
+	info_entry.append(setPrice[0][0])
+	info_entry.append(setID)
 	#Add info_entry to output_info
 	output_info.insert(0,info_entry) 
 	

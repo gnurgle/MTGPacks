@@ -1,4 +1,37 @@
-.container {
+table {
+	border: 2px solid white;
+	font-size: 18px;
+	border-collapse:collapse;
+	background: url('/static/img/crossed_stripes.png') repeat;
+}
+
+td {
+	border: 2px solid white;
+	font-size: 18px;
+	border-collapse:collapse;
+}
+
+.refresh_btn {
+   width = 350px !important;
+   height = 150px !important;
+   border: 2px solid #FF5252;
+   color: #FF5252;
+   transition: .40s;
+   -webkit-transition: .40s;
+
+}
+
+.refresh_btn:hover {
+   width = 350px;
+   height = 150px;
+	background: #FF5252;
+	color: white;
+	transition: .40s;
+	-webkit-transition: .40s;
+}
+
+
+.card_container {
   height: 255px;
   width: 180px;
   border-radius:8px;
@@ -12,26 +45,6 @@
 
 }
 
-.normal {mix-blend-mode: normal;}
-.multiply {mix-blend-mode: multiply;}
-.screen {mix-blend-mode: screen;}
-.overlay {
-	background-image: url('https://www.slightlymagic.net/forum/download/file.php?id=3458&mode=view');
-	background-blend-mode: overlay;
-  height: 255px;
-  width: 180px;
-  border-radius:8px;
-  mix-blend-mode: overlay;}
-.darken {mix-blend-mode: darken;}
-.lighten {mix-blend-mode: lighten;}
-.color-dodge {mix-blend-mode: color-dodge;}
-.color-burn {mix-blend-mode: color-burn;}
-.difference {mix-blend-mode: difference;}
-.exclusion {mix-blend-mode: exclusion;}
-.hue {mix-blend-mode: hue;}
-.saturation {mix-blend-mode: saturation;}
-.color {mix-blend-mode: color;}
-.luminosity {mix-blend-mode: luminosity;}
 .flip-card {
   background-color: transparent;
   width: 180px;
@@ -164,12 +177,59 @@
   text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
 
 }
+.foil:before, .foil:after {
+	content: '';
+	position: absolute;
+	left: -2px;
+	top: -2px;
+	background: linear-gradient(45deg, #fb0094, #0000ff, #00ff00,#ffff00, #ff0000, #fb0094, 
+		#0000ff, #00ff00,#ffff00, #ff0000);
+	background-size: 1200%;
+	width: calc(100% + 4px);
+	height: calc(100% + 4px);
+	z-index: -1;
+	animation: steam 20s linear infinite;
+	  border-radius:8px;
 
+}
+
+@keyframes steam {
+	0% {
+		background-position: 0 0;
+	}
+	50% {
+		background-position: 400% 0;
+	}
+	100% {
+		background-position: 0 0;
+	}
+}
+
+.foil:after {
+	filter: blur(15px);
+	border-radius:8px;
+
+}
+
+.card_container:hover{
+	transform: scale(1.05);
+	transition: 0.1s;
+}
 .card_click .front:hover {
   border-radius:10px;
   border-color: #FFD700;
   box-shadow: 0 0 30px rgba(255,215,0, .8);
   transition: 0.3s;
+}
+.dollar {
+  border-radius:10px !important;
+  border-color: #0051FF !important;
+  box-shadow: 0 0 30px rgba(0,81,255, .8) !important;
+}
+.five {
+  border-radius:10px !important;
+  border-color: #FF3826 !important;
+  box-shadow: 0 0 30px rgba(255,56,38, .8) !important;
 }
 
 .button-show{

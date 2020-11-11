@@ -3,8 +3,8 @@ import mysql.connector as sql
 #Create initial DB
 conn = sql.connect(
 	host="localhost",
-	user="",
-	password=""
+	user="gnurgle",
+	password="ALR6K66EAA"
 )
 
 cur = conn.cursor()
@@ -13,14 +13,32 @@ cur.execute("CREATE DATABASE mtg_db")
 #Create Tables
 conn = sql.connect(
 	host="localhost",
-	user="",
-	password="",
+	user="gnurgle",
+	password="ALR6K66EAA",
 	database="mtg_db"
 )
 
 cur = conn.cursor()
 
-
+cur.execute('CREATE TABLE Sets (Set_Id CHAR(5),\
+Set_Name CHAR(40),\
+Year INT,\
+Num_Cards INT,\
+Booster_Price DECIMAL(8,2),\
+Pack_Size INT,\
+Land INT,\
+Common INT,\
+Uncommon INT,\
+Rare_Mythic INT,\
+Rare_Chance INT,\
+Mythic_chance INT,\
+Foil_Chance INT,\
+Foil_Common INT,\
+Foil_Uncommon INT,\
+Foil_Rare INT,\
+Foil_Mythic INT,\
+Foil_Land INT,\
+PRIMARY KEY(Set_Id))')
 
 cur.execute('CREATE TABLE Card (Number INT,\
 Name CHAR(30),\
@@ -34,7 +52,8 @@ Has_Foil BIT,\
 Has_NonFoil BIT,\
 Is_Promo BIT,\
 Is_Land BIT,\
-PRIMARY KEY(Scryfall_ID))')
+PRIMARY KEY(Scryfall_Id),\
+FOREIGN KEY(Set_Id) REFERENCES Sets(Set_Id))')
 
 cur.execute('CREATE TABLE Card_Images (Scryfall_Id CHAR(70),\
 Num_sides INT,\

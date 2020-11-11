@@ -2,9 +2,11 @@
 {% block title %}Test Display for Cards{% endblock %}
 {% block styles %}
 {{super()}}
-	<link rel="stylesheet" href="/static/css/cards.css"> 
 	<link rel="stylesheet" href="/static/css/main_body.css">
 	<link rel="stylesheet" href="/static/css/navbar.css">
+	<link rel="stylesheet" href="/static/css/cards.css"> 
+	<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 {% endblock %}
 {% block navbar %}
 <nav class="navbar navbar-inverse " role="navigation">
@@ -47,12 +49,17 @@
 {% endblock %}
 {% block content%}
 {{super()}}
-		<img src = "{{pack_image}}" style="position:absolute;display:block;width:1040px; height:850px;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%)" />
+<div class="empty_block" style="display: inline-block; width:80%">
+	<div class="cards_div" style="float:left">
+		<img src = "{{pack_image}}" style="position:absolute;display:block;width:1000px; height:850px;z-index:1" />
 		<div id="superout">
-		<div id="outbox" style="margin:auto;width:1040px;height:850px;">
+		<div class ="overlay_button" style = "left:30%;top:50%;position:absolute;display:block;z-index:3;visibility:hidden;width=350px;height=350px">    			
+				<input type="button"  class="refresh_btn" value="Open New Pack" onclick = "addTotal({{info[2]}});addPackPrice({{info[3]}});getProfit();storePack('{{pack_name}}');getOpened();getProfitable({{info[2]}},{{info[3]}});getNonProfit();reload()" style="width:350px;height:50px;text-size=16px"/>    			
+		</div>
+		<div class="outbox animate__animated animate__zoomIn" style="margin: 0, 10%;width:1040px;height:850px;position:absolute;z-index:2">
 				<div id="card_box">			
 				{% for card in cards %}
-				<div class="container">
+				<div class="card_container">
 					{% if loop.index == info[1] %}
   					<div class="card_click">
 					{% elif loop.index == 14 %}
@@ -65,10 +72,17 @@
 						<div class="front">
 						<img src = "/static/img/back.jpg" style="width:180px;height:255px;border-radius:10px"/>
 						</div>
-						<div class="back">
 					{% if loop.index == info[1] %}
+						<div class="back foil">
 						<img src = "/static/img/foil.png" width="180px" height="255px" style="width:180px;height:255px;border-radius:8px;background-image:url('{{card[0][2]}}');background-size:180px 255px;"/>
 					{% else %}
+						{% if card[0][4] > 1 and card[0][4] < 5 %}
+						<div class="back dollar">
+						{% elif card[0][4] > 5 %}
+						<div class="back five">
+						{% else %}
+						<div class="back">
+						{% endif %}
 						<img src = "{{card[0][2]}}" style="width:180px;height:255px;border-radius:8px"/>			
 					{% endif %}
 						$ {{ card[0][4] }}
@@ -79,17 +93,35 @@
 				{% endfor %}
     			</div>
     			</div>
-		<input type="button" id="btn" value="refresh" onclick = "addTotal({{info[2]}});addPackPrice(3.99);getProfit();storePack('{{pack_name}}');reload()" style="margin:0 auto;display:block;" />
-    			</div>
-		<div id="statbox" style="margin-right: 300 px">
-    			<kbd>The total earned is: $<kbd class="counter counter-default" data-value="1.00" data-decimals="2">0.00</kbd> </kbd>
+    </div>
+    </div>
+    <div class= "display_nums" style="float:left;position:relative;left:1010px">
+		<table>
+		<thead>
+			<tr>
+				<td colspan="2">Statistics</td>
+			</tr>
+		</thead>
+			<tr>
+				<td>Total Opened Packs :    <p class="opened_counter counter-default" data-vale = "0">0</p></td>
+    			<td>The total earned is: $<p class="counter counter-default" data-value="1.00" data-decimals="2">0.00</p> </td>
+			</tr>
+			<tr>
+				<td>Total Profitable Packs: <p class="profitable_counter counter-default" data-vale = "0">0</p></td>
+    			<td>The total spent is: $<p class="pack_counter counter-default" data-value="1.00" data-decimals="2">0.00</p> </td>
+			</tr>
+			<tr>
+				<td>Total Non-Profit Packs: <p class="nonprofit_counter counter-default" data-vale = "0">0</p></td>
+    			<td>The total profit is: $<p class="profit_counter counter-default" data-value="1.00" data-decimals="2">0.00</p> </td>
+			</tr>
+		</table>
+		<img src = "/static/img/{{info[4]}}_pack.png" style="width:315;height:540px;" />
 		</div>
-		<div id="statbox" style="margin-right: 300 px">
-    			<kbd>The total spent is: $<kbd class="pack_counter counter-default" data-value="1.00" data-decimals="2">0.00</kbd> </kbd>
-		</div>
-		<div id="statbox" style="margin-right: 300 px">
-    			<kbd>The total profit is: $<kbd class="profit_counter counter-default" data-value="1.00" data-decimals="2">0.00</kbd> </kbd>
-		</div>
+
+</div>
+</div>
+
+		
 {% endblock %}
 {% block scripts %} 
 	{{super()}}	
