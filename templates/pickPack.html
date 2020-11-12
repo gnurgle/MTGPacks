@@ -47,45 +47,69 @@
 {% endblock %}
 {% block content%}
 {{super()}}
-
+	<div style="position:absolute;margin:0 20%;width=70%">
     <div class="coverflow">
         <ul class="flip-items">
-            <li data-flip-title="Aether Revolt" data-flip-category="2017">
+            <li data-flip-title="Aether Revolt" data-flip-category="2017" id= "aer">
 				<a href="/aerPack">
                 <img src="static/img/aer_pack.png" style="height:600px;width:auto;">
 				</a>
              </li>
-            <li data-flip-title="Ixalan" data-flip-category="2017">
+            <li data-flip-title="Ixalan" data-flip-category="2017" id="xln">
 				<a href="/xlnPack">
                 <img src="static/img/xln_pack.png" style="height:600px;width:auto;">
 				</a>
              </li>
-            <li data-flip-title="Rivals of Ixalan" data-flip-category="2018">
+            <li data-flip-title="Rivals of Ixalan" data-flip-category="2018" id="rix">
 				<a href="/rixPack">
                 <img src="static/img/rix_pack.png" style="height:600px;width:auto;">
 				</a>
              </li>
-            <li data-flip-title="Dominaria" data-flip-category="2018">
+            <li data-flip-title="Dominaria" data-flip-category="2018" id="dom">
 				<a href="/domPack">
                 <img src="static/img/dom_pack.png" style="height:600px;width:auto;">
 				</a>
              </li>
-            <li data-flip-title="Core 2019" data-flip-category="2019">
+             <li data-flip-title="Battlebond" data-flip-category="2018" id="bbd">
+				<a href="/bbdPack">
+                <img src="static/img/bbd_pack.png" style="height:600px;width:auto;">
+				</a>
+             </li>
+			<li data-flip-title="Core 2019" data-flip-category="2018" id="m19">
 				<a href="/m19Pack">
                 <img src="static/img/m19_pack.png" style="height:600px; width:auto;">
 				</a>
             </li>
-            <li data-flip-title="War of the Sparks" data-flip-category="2019">
+            <li data-flip-title="Guilds of Ravnica" data-flip-category="2018" id="grn">
+				<a href="/grnPack">
+                <img src="static/img/grn_pack.png" style="height:600px;width:auto;">
+				</a>
+             </li>
+            <li data-flip-title="Ultimate Masters" data-flip-category="2019" id="uma">
+				<a href="/umaPack">
+                <img src="static/img/uma_pack.png" style="height:600px;width:auto;">
+				</a>
+             </li>
+            <li data-flip-title="Ravnical Allegiance" data-flip-category="2019" id="rna">
+				<a href="/rnaPack">
+                <img src="static/img/rna_pack.png" style="height:600px;width:auto;">
+				</a>
+             </li>
+            <li data-flip-title="War of the Sparks" data-flip-category="2019" id="war">
 				<a href="/warPack">
                 <img src="static/img/war_pack.png" style="height:600px; width:auto;">
 				</a>
             </li>
-            <li data-flip-title="Modern Horizons" data-flip-category="2019">
+            <li data-flip-title="Modern Horizons" data-flip-category="2019" id="mh1">
 				<a href="/mh1Pack">
                 <img src="static/img/mh1_pack.png" style="height:600px; width:auto;">
 				</a>
             </li>
         </ul>
+    </div>
+    <div>
+	    <img class="set_logo" src="static/img/m19_logo.png" style="width=auto; height:180px">
+	</div>
     </div>
 
 {% endblock %}

@@ -45,6 +45,37 @@ def rixPack():
 	p_name = "rixPack"
 	p_img = "/static/img/rix.jpg"
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
+@app.route("/grnPack")
+def grnPack():
+
+	cards_list = make_pack_a("grn")
+	p_name = "grnPack"
+	p_img = "/static/img/grn.jpg"
+	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
+
+@app.route("/rnaPack")
+def rnaPack():
+
+	cards_list = make_pack_a("rna")
+	p_name = "rnaPack"
+	p_img = "/static/img/rna.jpg"
+	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
+
+@app.route("/bbdPack")
+def bbdPack():
+
+	cards_list = make_pack_a("bbd")
+	p_name = "bbdPack"
+	p_img = "/static/img/bbd.jpg"
+	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
+
+@app.route("/umaPack")
+def umaPack():
+
+	cards_list = make_pack_a("uma")
+	p_name = "umaPack"
+	p_img = "/static/img/uma.jpg"
+	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/m19Pack")
 def m19Pack():

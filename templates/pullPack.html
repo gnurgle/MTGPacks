@@ -53,26 +53,28 @@
 	<div class="cards_div" style="float:left">
 		<img src = "{{pack_image}}" style="position:absolute;display:block;width:1000px; height:850px;z-index:1" />
 		<div id="superout">
-		<div class ="overlay_button" style = "left:30%;top:50%;position:absolute;display:block;z-index:3;visibility:hidden;width=350px;height=350px">    			
-				<input type="button"  class="refresh_btn" value="Open New Pack" onclick = "addTotal({{info[2]}});addPackPrice({{info[3]}});getProfit();storePack('{{pack_name}}');getOpened();getProfitable({{info[2]}},{{info[3]}});getNonProfit();reload()" style="width:350px;height:50px;text-size=16px"/>    			
+		<div class ="overlay_button" style = "left:27%;top:43%;position:absolute;display:block;z-index:3;visibility:hidden;width=350px;height=350px">    			
+				<input type="button"  class="refresh_btn" value="Open New Pack" onclick = "addTotal({{info[2]}});addPackPrice({{info[3]}});getProfit();storePack('{{pack_name}}');getOpened();getProfitable({{info[2]}},{{info[3]}});getNonProfit();getTypes();reload()" style="width:350px;height:50px;text-size=16px"/>    			
 		</div>
 		<div class="outbox animate__animated animate__zoomIn" style="margin: 0, 10%;width:1040px;height:850px;position:absolute;z-index:2">
 				<div id="card_box">			
 				{% for card in cards %}
 				<div class="card_container">
-					{% if loop.index == info[1] %}
-  					<div class="card_click">
-					{% elif loop.index == 14 %}
-  					<div class="card_click">
-  					{% elif loop.index == 13 and info[1] > 0 %}
-  					<div class="card_click">  					
+					{% if card[0][5] == "rare" %}
+  					<div class="card_click" id="{{card[0][5]}}" >
+					{% elif card[0][5] == "mythic" %}
+  					<div class="card_click" id="{{card[0][5]}}">
+					{% elif info[5][loop.index-1] == "foil" %}
+  					<div class="card_click" id="foil{{card[0][5]}}">
+  					{% elif info[5][loop.index-1] == "land" %}
+  					<div class="card" id="land">
   					{% else %}
-  					<div class="card">
+  					<div class="card" id="{{card[0][5]}}">
 					{% endif %}
 						<div class="front">
 						<img src = "/static/img/back.jpg" style="width:180px;height:255px;border-radius:10px"/>
 						</div>
-					{% if loop.index == info[1] %}
+					{% if info[5][loop.index-1] == "foil" %}
 						<div class="back foil">
 						<img src = "/static/img/foil.png" width="180px" height="255px" style="width:180px;height:255px;border-radius:8px;background-image:url('{{card[0][2]}}');background-size:180px 255px;"/>
 					{% else %}
@@ -99,23 +101,38 @@
 		<table>
 		<thead>
 			<tr>
-				<td colspan="2">Statistics</td>
+				<td colspan="10">Statistics</td>
 			</tr>
 		</thead>
 			<tr>
-				<td>Total Opened Packs :    <p class="opened_counter counter-default" data-vale = "0">0</p></td>
-    			<td>The total earned is: $<p class="counter counter-default" data-value="1.00" data-decimals="2">0.00</p> </td>
+				<td colspan="5">Total Opened Packs :    <p class="opened_counter counter-default" data-vale = "0">0</p></td>
+    			<td colspan="5">The total earned is: $<p class="counter counter-default" data-value="1.00" data-decimals="2">0.00</p> </td>
 			</tr>
 			<tr>
-				<td>Total Profitable Packs: <p class="profitable_counter counter-default" data-vale = "0">0</p></td>
-    			<td>The total spent is: $<p class="pack_counter counter-default" data-value="1.00" data-decimals="2">0.00</p> </td>
+				<td colspan="5">Total Profitable Packs: <p class="profitable_counter counter-default" data-vale = "0">0</p></td>
+    			<td colspan="5">The total spent is: $<p class="pack_counter counter-default" data-value="1.00" data-decimals="2">0.00</p> </td>
 			</tr>
 			<tr>
-				<td>Total Non-Profit Packs: <p class="nonprofit_counter counter-default" data-vale = "0">0</p></td>
-    			<td>The total profit is: $<p class="profit_counter counter-default" data-value="1.00" data-decimals="2">0.00</p> </td>
+				<td colspan="5">Total Non-Profit Packs: <p class="nonprofit_counter counter-default" data-vale = "0">0</p></td>
+    			<td colspan="5">The total profit is: $<p class="profit_counter counter-default" data-value="1.00" data-decimals="2">0.00</p> </td>
+			</tr>
+			<tr>
+				<td colspan="2">Normal: </td>
+				<td colspan="2">Com:<p class="c_counter counter-default" data-vale = "0">0</p></td>
+				<td colspan="2">Unc:<p class="u_counter counter-default" data-vale = "0">0</p></td>
+				<td colspan="2">Rare:<p class="r_counter counter-default" data-vale = "0">0</p></td>
+				<td colspan="2">Myth:<p class="m_counter counter-default" data-vale = "0">0</p></td>
+			</tr>
+			<tr>
+				<td colspan="2">Foil:   </td>
+				<td colspan="2">Com:<p class="fc_counter counter-default" data-vale = "0">0</p></td>
+				<td colspan="2">Unc:<p class="fu_counter counter-default" data-vale = "0">0</p></td>
+				<td colspan="2">Rare:<p class="fr_counter counter-default" data-vale = "0">0</p></td>
+				<td colspan="2">Myth:<p class="fm_counter counter-default" data-vale = "0">0</p></td>
 			</tr>
 		</table>
-		<img src = "/static/img/{{info[4]}}_pack.png" style="width:315;height:540px;" />
+		<img class = "pack_image" src = "/static/img/{{info[4]}}_pack.png" style="width:284;height:486px;" />
+		
 		</div>
 
 </div>

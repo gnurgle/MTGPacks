@@ -6,6 +6,15 @@ var pack_total = 0;
 var opened = 0;
 var profitable = 0;
 var prev_pack = 0;
+var cc = 0;
+var uc = 0;
+var rc = 0;
+var mc = 0;
+var fcc = 0;
+var fuc = 0;
+var frc = 0;
+var fmc = 0;
+
 var pack_name = "";
 
 $('.card_click').one('click',function(){
@@ -22,6 +31,51 @@ $('.card').one("mouseenter",function(){
 		$('.overlay_button').css("visibility", "visible");
 
 });
+
+function getTypes(){
+	c = document.querySelectorAll('[id^=common]').length
+	u = document.querySelectorAll('[id^=uncommon]').length
+	r = document.querySelectorAll('[id^=rare]').length
+	m = document.querySelectorAll('[id^=mythic]').length
+	fc = document.querySelectorAll('[id^=foilcommon]').length
+	fu = document.querySelectorAll('[id^=foiluncommon]').length
+	fr = document.querySelectorAll('[id^=foilrare]').length
+	fm = document.querySelectorAll('[id^=foilmythic]').length
+
+	cc = cc + c
+	uc = uc + u
+	rc = rc + r
+	mc = mc + m
+	fcc = fcc + fc
+	fuc = fuc + fu
+	frc = frc + fr
+	fmc = fmc + fm
+	
+	$(".c_counter").countimator({
+		value: cc
+	});
+	$(".u_counter").countimator({
+		value: uc
+	});
+	$(".r_counter").countimator({
+		value: rc
+	});
+	$(".m_counter").countimator({
+		value: mc
+	});
+	$(".fc_counter").countimator({
+		value: fcc
+	});
+	$(".fu_counter").countimator({
+		value: fuc
+	});
+	$(".fr_counter").countimator({
+		value: frc
+	});
+	$(".fm_counter").countimator({
+		value: fmc
+	});
+};
 
 function reload() {
   	if (clicked + flipped >= 15)
@@ -55,7 +109,7 @@ function loadlink(){
 			}
 			$this.data('mouseentered',true); 
 			$(this).toggleClass('flipped'); 
-			clicked = clicked + 1; 
+			flipped = flipped + 1; 
 		  	if (clicked + flipped >= 15)
 				$('.overlay_button').css("visibility", "visible");
 		  });
