@@ -2,20 +2,21 @@ import os
 import requests
 import json
 import mysql.connector as sql
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify, make_response
 from makePack import make_pack_a
 from pullCard import fetch_card
+from updateSingle import  update_Single
 from fetch_prices import fetch_prices
 from flask_bootstrap import Bootstrap
+from flask_wtf import FlaskForm
+from wtforms import SelectField, StringField, validators
 
 
 app = Flask(__name__)
 Bootstrap(app)
-#notes for future improvements:
-#change so that set name is passes by make_x_pack()
-#make the p_name and p_img on the fly in the appropriate files 
+app.config['SECRET_KEY'] ='secret'
 
-
+#Pack pass throughs
 @app.route("/")
 def index():
 
@@ -108,6 +109,55 @@ def xlnPack():
 	p_name = "xlnPack"
 	p_img = "/static/img/xln.jpg"
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
+
+@app.route("/thbPack")
+def thbPack():
+
+	cards_list = make_pack_a("thb")
+	p_name = "thbPack"
+	p_img = "/static/img/thb.jpg"
+	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
+
+@app.route("/eldPack")
+def eldPack():
+
+	cards_list = make_pack_a("eld")
+	p_name = "eldPack"
+	p_img = "/static/img/eld.jpg"
+	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
+
+@app.route("/m20Pack")
+def m20Pack():
+
+	cards_list = make_pack_a("m20")
+	p_name = "m20Pack"
+	p_img = "/static/img/m20.jpg"
+	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
+
+@app.route("/a25Pack")
+def a25Pack():
+
+	cards_list = make_pack_a("a25")
+	p_name = "a25Pack"
+	p_img = "/static/img/a25.jpg"
+	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
+
+@app.route("/imaPack")
+def imaPack():
+
+	cards_list = make_pack_a("ima")
+	p_name = "imaPack"
+	p_img = "/static/img/ima.jpg"
+	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
+
+@app.route("/mm3Pack")
+def mm3Pack():
+
+	cards_list = make_pack_a("mm3")
+	p_name = "mm3Pack"
+	p_img = "/static/img/xln.jpg"
+	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
+
 
 @app.route("/pickPack")
 def pickPack():
@@ -214,6 +264,95 @@ def fetchPrices():
 def testingpage():
 
 	return render_template("test.html") 
+
+class Form(FlaskForm):
+	#Connect to DB
+	conn = sql.connect(
+		host="localhost",
+		user="gnurgle",
+		password="ALR6K66EAA",
+		database="mtg_db"
+	)
+	cur = conn.cursor()
+	cur.execute("SELECT Set_Id,Set_Name FROM Sets")
+	rows =cur.fetchall()
+	rows.insert(0,[" ", "-- Set Name --"])
+
+	sets = SelectField('sets', choices=rows)
+	cards = SelectField('cards', choices=[(" ","-- Card Name --")])
+	#options = SelectField('options', choices=[(" ","-- Field to Change --")])
+	card_change = StringField('New value', [validators.InputRequired()])
+	
+
+#Admin page
+@app.route("/admin", methods=['GET','POST'])
+def adminpage():
+
+	form = Form()
+	#Connect to DB
+	conn = sql.connect(
+		host="localhost",
+		user="gnurgle",
+		password="ALR6K66EAA",
+		database="mtg_db"
+	)
+	cur = conn.cursor()
+
+	if request.method =='POST':
+		try:
+			cur.execute("UPDATE Card SET Scryfall_Id = %s \
+				WHERE Scryfall_ID = %s",\
+				(form.card_change.data,form.cards.data))
+			
+			conn.commit()
+			cur.close()
+			conn.close()
+			update_Single(form.card_change.data)
+		except:
+			print("Update Card Failed")
+			conn.rollback()
+	return render_template('admin.html', form=form)
+
+#Route for card
+@app.route('/admin/set/<setsid>')
+def cards(setsid):
+
+	#Connect to DB
+	conn = sql.connect(
+		host="localhost",
+		user="gnurgle",
+		password="ALR6K66EAA",
+		database="mtg_db"
+	)
+	cur = conn.cursor()
+	cur.execute("SELECT Scryfall_Id, Name FROM Card WHERE Set_Id = %s\
+				ORDER BY Name,Number",(setsid,))
+	rows = cur.fetchall()
+	rows.insert(0,[" ", "-- Card Name --"])
+
+	cur.close()
+	conn.close()
+	return jsonify({'cards' : rows})
+
+#Route for card options
+@app.route('/admin/card')
+def card_options():
+
+	#Connect to DB
+	conn = sql.connect(
+		host="localhost",
+		user="gnurgle",
+		password="ALR6K66EAA",
+		database="mtg_db"
+	)
+	cur = conn.cursor()
+	cur.execute("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS \
+				WHERE (TABLE_NAME='Card') OR (TABLE_NAME='Card_Images')")
+	rows = cur.fetchall()
+	#rows.insert(0,[" ", "-- Card Name --"])
+	
+	return jsonify({'options' : rows})
+
 
 if __name__ == "__main__":
 	app.run(debug = True)

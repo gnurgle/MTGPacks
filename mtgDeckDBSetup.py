@@ -53,7 +53,7 @@ Has_NonFoil BIT,\
 Is_Promo BIT,\
 Is_Land BIT,\
 PRIMARY KEY(Scryfall_Id),\
-FOREIGN KEY(Set_Id) REFERENCES Sets(Set_Id))')
+FOREIGN KEY(Set_Id) REFERENCES Sets(Set_Id) ON UPDATE CASCADE)')
 
 cur.execute('CREATE TABLE Card_Images (Scryfall_Id CHAR(70),\
 Num_sides INT,\
@@ -62,7 +62,7 @@ Price_Foil DECIMAL(8,2),\
 Front_Image CHAR(80),\
 Back_Image CHAR(80),\
 PRIMARY KEY(Scryfall_ID),\
-FOREIGN KEY(Scryfall_ID) REFERENCES Card(Scryfall_ID))') 
+FOREIGN KEY(Scryfall_ID) REFERENCES Card(Scryfall_ID) ON UPDATE CASCADE)') 
 
 cur.close()
 conn.close()
