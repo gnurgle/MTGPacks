@@ -1,10 +1,8 @@
 import mysql.connector as sql
 import random
 
-#---List of Pack names and types
-#make_pack_a = Core M19 Style Pack
 
-#Core m19 Style Pack
+#Packs post Shards of Alara
 def make_pack_a(setN):
 
 	#Set Set Name

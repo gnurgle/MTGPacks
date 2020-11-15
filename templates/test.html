@@ -48,16 +48,8 @@
 {% block content%}
 {{super()}}
 
-<div class="flip">
-    <img src="~/images/flip_images/branches.jpg" alt="Avatar" class="flip-image" style="width:100%">
-    <div class="flip-middle">
-        <div class="flip-text"><a href="/Home/Locations">LOCATIONS</a><br /><div class="is-size-6">Over 80 Years of Service</div></div>
-    </div>
-</div>
 {% endblock %}
 {% block scripts %} 
 	{{super()}}	
-	<script src="/static/js/hover-flip.js"></script>
-	<script src="/static/js/jquery.countimator.min.js"></script>
 
 {% endblock %}

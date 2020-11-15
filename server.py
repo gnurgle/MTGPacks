@@ -155,19 +155,69 @@ def mm3Pack():
 
 	cards_list = make_pack_a("mm3")
 	p_name = "mm3Pack"
-	p_img = "/static/img/xln.jpg"
+	p_img = "/static/img/mm3.jpg"
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
+@app.route("/oriPack")
+def oriPack():
+
+	cards_list = make_pack_a("ori")
+	p_name = "oriPack"
+	p_img = "/static/img/ori.jpg"
+	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
+
+@app.route("/emaPack")
+def emaPack():
+
+	cards_list = make_pack_a("ema")
+	p_name = "emaPack"
+	p_img = "/static/img/ema.jpg"
+	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
+
+@app.route("/ogwPack")
+def ogwPack():
+
+	cards_list = make_pack_a("ogw")
+	p_name = "ogwPack"
+	p_img = "/static/img/ogw.jpg"
+	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
+
+@app.route("/mm2Pack")
+def mm2Pack():
+
+	cards_list = make_pack_a("mm2")
+	p_name = "mm2Pack"
+	p_img = "/static/img/mm2.jpg"
+	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
+
+@app.route("/dtkPack")
+def dtkPack():
+
+	cards_list = make_pack_a("dtk")
+	p_name = "dtkPack"
+	p_img = "/static/img/dtk.jpg"
+	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
+
+@app.route("/ktkPack")
+def ktkPack():
+
+	cards_list = make_pack_a("ktk")
+	p_name = "ktkPack"
+	p_img = "/static/img/ktk.jpg"
+	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
+
+@app.route("/m15Pack")
+def m15Pack():
+
+	cards_list = make_pack_a("m15")
+	p_name = "m15Pack"
+	p_img = "/static/img/m15.jpg"
+	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/pickPack")
 def pickPack():
 
 	return render_template("pickPack.html")
-
-#Add a Set
-@app.route('/admin/addSet')
-def new_set():
-	return render_template('addSet.html')
 
 #Set add request Form
 @app.route("/admin/setAdded", methods = ['POST','GET'])
@@ -219,14 +269,20 @@ def addSet():
 		,(set_id,set_name,year,num_cards,price,size,land,cmn,unc,ra_my,r_cnc,m_cnc,f_cnc,f_cmn,f_unc,f_rar,f_my,f_land))
 	#Commit to DB
 	conn.commit()
+
+	cur.execute("SELECT Set_Id, Set_Name FROM Sets")
+	rows = cur.fetchall()
+
 	cur.close()
 	conn.close()
-	return render_template('addSet.html')
+	#return render_template('addSet.html', choices = list(rows))
+	return redirect(url_for('adminSet'))
 
-#Pull a Set
-@app.route('/admin/pullSet')
-def pull_set():
+#Admin page for cards and sets
+@app.route('/admin/')
+def adminSet():
 
+	form = Form()
 	#Connect to DB
 	conn = sql.connect(
 		host="localhost",
@@ -242,7 +298,7 @@ def pull_set():
 
 	cur.close()
 	conn.close()
-	return render_template("pullSet.html", choices = list(rows)) 
+	return render_template("admin.html", form=form, choices = list(rows)) 
 
 #Set Pull request Form
 @app.route("/admin/setPulled/<set_id>")
@@ -250,14 +306,14 @@ def setPulled(set_id):
 	sets = request.args.get('set_id','')
 	fetch_card(set_id)
 
-	return redirect("/admin/pullSet") 
+	return redirect(url_for('adminSet')) 
 
 #Fetch Prices
 @app.route("/admin/fetchPrices")
 def fetchPrices():
 
 	fetch_prices()
-	return redirect("/admin/pullSet") 
+	return redirect(url_for('adminSet')) 
 
 #Fetch Prices
 @app.route("/test")
@@ -285,8 +341,8 @@ class Form(FlaskForm):
 	
 
 #Admin page
-@app.route("/admin", methods=['GET','POST'])
-def adminpage():
+@app.route("/admin/update", methods=['GET','POST'])
+def cardUpdate():
 
 	form = Form()
 	#Connect to DB
@@ -297,6 +353,9 @@ def adminpage():
 		database="mtg_db"
 	)
 	cur = conn.cursor()
+	#Select Set information
+	cur.execute("SELECT Set_Id, Set_Name FROM Sets")
+	rows = cur.fetchall()
 
 	if request.method =='POST':
 		try:
@@ -311,7 +370,7 @@ def adminpage():
 		except:
 			print("Update Card Failed")
 			conn.rollback()
-	return render_template('admin.html', form=form)
+	return render_template('admin.html', form=form, choices=list(rows))
 
 #Route for card
 @app.route('/admin/set/<setsid>')

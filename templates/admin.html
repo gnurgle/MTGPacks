@@ -46,18 +46,74 @@
 {% endblock %}
 {% block content%}
 {{super()}}
+<div style="left:20%;position:absolute">
+<div class="set_add" style="float:left;width:400px;display:block">
+	<form action = "{{ url_for('addSet') }}" method = "POST">
+			<h1>Add a new Set</h1>
+			Set ID
+			<input class="add_input" type = "text" maxlength = "5" name = "Set_Id" /><br>
+			Booster Pack Price
+			<input class="add_input" type = "number" name = "Booster_Price" step=".01"/><br>
+			Number of Cards in Booster Pack
+			<input class="add_input" type = "number" name = "Pack_Size"/><br>
+			Number of Lands in Pack
+			<input class="add_input" type = "number" name = "Land" /><br>
+			Number of Commons
+			<input class="add_input" type = "number" name = "Common" /><br>
+			Number of Uncommons
+			<input class="add_input" type = "number" name = "Uncommon" /><br>
+			Number of Rare/Mythic
+			<input class="add_input" type = "number" name = "Rare_Mythic" /><br>
+			Chance of Rare
+			<input class="add_input" type = "number" name = "Rare_Chance" /><br>
+			Chance of Mythic
+			<input class="add_input" type = "number" name = "Mythic_Chance" /><br>
+			Foil Chance
+			<input class="add_input" type = "number" name = "Foil_Chance" /><br>
+			Foil Common Chance
+			<input class="add_input" type = "number" name = "Foil_Common" /><br>
+			Foil Uncommon Chance
+			<input class="add_input" type = "number" name = "Foil_Uncommon" /><br>
+			Foil Rare Chance
+			<input class="add_input" type = "number" name = "Foil_Rare" /><br>
+			Foil Mythic Chance
+			<input class="add_input" type = "number" name = "Foil_Mythic" /><br>
+			Foil Land Chance
+			<input class="add_input" type = "number" name = "Foil_Land" /><br>
+			<input type = "Submit" value = "submit" /><br>
+		</form>
+		</div>
+		
+	<div style="float:left">
+	<h1>Select Set to Pull Cards for</h1><br>
 
-	<form method="POST" style="font-size:18px;color:black;">
+	{% for choice in choices %}
+	<div id= "card_button">
+	<a href="/admin/setPulled/{{choice[0]}}" class="btn btn-primary card_button">{{choice[1]}}</a>
+	</div>
+	{% endfor %}
+	<div id= "card_button">
+	<a href="/admin/fetchPrices" class="btn btn-primary card_button">Fetch Prices</a>
+	</div>
+
+	</div>
+	<br>
+	<div style="float:left">
+	<h1>Select Set and Card to Update</h1>
+
+	<form action= "{{url_for('cardUpdate')}}" method="POST" style="font-size:18px;color:black;">
 		{{form.csrf_token}}
 		{{form.sets}}
 		{{form.cards}}
 		{{form.card_change}}
 		<input type="submit">
 	</form>
+	</div>
 
+
+</div>
 {% endblock %}
 {% block scripts %} 
 	{{super()}}	
 	<script src="/static/js/drop_down.js"></script>
-
 {% endblock %}
