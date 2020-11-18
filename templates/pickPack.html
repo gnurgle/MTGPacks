@@ -36,7 +36,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><a href="/">Home</a></li>
-        <li><a href="#">News</a></li>
+        <li><a href="/news">News</a></li>
         <li><a href="/pickPack">Pick Packs</a></li>
         <li><a href="#">Leaderboard</a></li>
       </ul>
@@ -185,6 +185,7 @@
 
 {% endblock %}
 {% block scripts %} 
-	{{super()}}	
+	{{super()}}
+	<script src="/static/js/jquery.flipster.min.js"></script>
 	<script src="/static/js/pack.js"></script>
 {% endblock %}

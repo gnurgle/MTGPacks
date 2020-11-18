@@ -413,5 +413,11 @@ def card_options():
 	return jsonify({'options' : rows})
 
 
+#Set news page
+@app.route('/news')
+def new():
+
+	return render_template('news.html')
+
 if __name__ == "__main__":
 	app.run(debug = True)

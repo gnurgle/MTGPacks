@@ -1,0 +1,82 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Test Display for Cards{% endblock %}
+{% block styles %}
+{{super()}}
+	<link rel="stylesheet" href="/static/css/main_body.css">
+	<link rel="stylesheet" href="/static/css/navbar.css">
+{% endblock %}
+{% block navbar %}
+<nav class="navbar navbar-inverse " role="navigation">
+ <div class="bar_nav">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+    </div>
+    <a class="navbar-brand" href="#">MTGPacks</a>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="navbar-collapse-1">
+     
+      <ul class="nav navbar-nav navbar-left">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">User <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">History</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="/">Home</a></li>
+        <li><a href="#">News</a></li>
+        <li><a href="/pickPack">Pick Packs</a></li>
+        <li><a href="#">Leaderboard</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+</div><!-- /.navbar-container -->
+</nav>
+
+{% endblock %}
+{% block content%}
+	<div>
+		<h1> November 14th, 2020 </h1>
+		<p> Added Magic Origins(ORI), Eternal Masters(EMA), Oath of the Gatewatch(OGW), Modern Masters 2015(mm2), Dragons of Tarkir(DTK), Khans of Tarkir(KTK), Core Set 2015 (M15). There are now 22 packs which can be pulled</p>
+	</div>
+	<div>
+		<h1> November 13th, 2020 </h1>
+		<p> Added Modern Masters 2017(MM3), Iconic Masters(IMA), Masters 25(A25), Core Set 2020(M20), Throne of Eldraine(ELD), Theros: Beyond Death(THB). There is now 15 packs which can be pulled.</p>
+	</div>
+	<div>
+		<h1> November 11th, 2020 </h1>
+		<p> Further improved pack generation allowing a large amount of packs to be added. Added Battlebond(BBD) and Ultimate Masters(UMA). There is now nine packs which can be pulled.</p>
+	</div>
+	<div>
+		<h1> November 10th, 2020 </h1>
+		<p> Pack generation has been improved to make a wider variety of packs. Improved Animations </p>
+	</div>
+	<div>
+		<h1> November 4th, 2020 </h1>
+		<p> Aether Revolt(AER), Ixalan (XLN), and Dominaria(DOM) all added. There is now seven packs which can be pulled. </p>
+	</div>
+	<div>
+		<h1> November 3rd, 2020 </h1>
+		<p> War of the Sparks(WAR), Rivals of Ixalan (RIX), Modern Horizons (MH1) all added. There is now four packs which can be pulled. </p>
+	</div>
+	<div>
+		<h1> October 27th, 2020 </h1>
+		<p> Core Set 2019 (M19) added. There is now one(!) pack which can be pulled. </p>
+	</div>
+{% endblock %}
+{% block scripts %} 
+	{{super()}}	
+	<script src="/static/js/hover-flip.js"></script>
+	<script src="/static/js/jquery.countimator.min.js"></script>
+
+{% endblock %}
