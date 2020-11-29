@@ -236,6 +236,17 @@ class User(UserMixin, db.Model):
 def load_user(user_id)	
 	return User.query.get(int(user_id))
 
+#login/signup forms
+class SignupForm(FlaskForm):
+    """User Sign-up Form."""
+    username = StringField('UserName',validators=[InputRequired(), Length(max = 20)])
+    password = PasswordField('Password', validators=[InputRequired(), Length() max = 80)])
+    
+    
+class LoginForm(FlaskForm):
+    """User Log-in Form."""
+    username = StringField('UserName', validators=[DataRequired(), Length(max = 20)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(max = 80)])
 
 #login routes
 @app.route('/login', methods=['GET', 'POST'])
