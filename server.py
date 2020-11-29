@@ -13,8 +13,14 @@ from wtforms import SelectField, StringField, validators
 
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret'
+#app.config['SQLALCHEMY_DATABASE_URI'] = path to mysql database
 Bootstrap(app)
-app.config['SECRET_KEY'] ='secret'
+db = SQLAlchemy(app)
+login_manger = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
 
 #Pack pass throughs
 @app.route("/")
@@ -218,6 +224,55 @@ def m15Pack():
 def pickPack():
 
 	return render_template("pickPack.html")
+
+#user class to add users to db
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True)
+    password = db.Column(db.String(80))
+
+
+@login_manager.user_loader
+def load_user(user_id)	
+	return User.query.get(int(user_id))
+
+
+#login routes
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+	form = LoginForm
+
+	if form.validate_on_submit():
+		user = User.query.filter_by(username=form.username.data).first()
+		if user:
+			if user.password == from.password.data:
+				login_user(user)
+				return redirect(url_for('index'))
+
+		return '<h1>Invalid username or password</h1>'
+		#return '<h1>' + form.username.data + ' ' + form.password.data + </h1>'
+	
+	return render_template ('login.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+	logout_user()
+	return redirect(url_for('index')
+
+			
+@app.route('/signup', methods=['GET', 'POST'])
+	def signup():
+		form = SignupForm()
+
+		if from.validate_on_submit():
+			new_user = User(username = form.username.data, password=form.password.data)
+			db.session.add(new_user)
+			db.session.commit()
+
+			return '<h1>New User has been created!</h1>'
+			
+		return render_template('signUp.html')
 
 #Set add request Form
 @app.route("/admin/setAdded", methods = ['POST','GET'])
