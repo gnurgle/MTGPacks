@@ -64,11 +64,6 @@ Back_Image CHAR(80),\
 PRIMARY KEY(Scryfall_ID),\
 FOREIGN KEY(Scryfall_ID) REFERENCES Card(Scryfall_ID) ON UPDATE CASCADE)') 
 
-cur.execute('CREATE TABLE Users(User_Id CHAR(30),\
-Username CHAR(20),\
-Password CHAR(80),\
-PRIMARY KEY(User_Id))')
-
 cur.close()
 conn.close()
 
