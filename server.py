@@ -7,21 +7,109 @@ from makePack import make_pack_a
 from pullCard import fetch_card
 from updateSingle import  update_Single
 from fetch_prices import fetch_prices
+from writeHistory import addUserHistory
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
-from wtforms import SelectField, StringField, validators
+from wtforms import SelectField, StringField, PasswordField, BooleanField
+from wtforms.validators import InputRequired, Email, Length
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 
+
+
+
+
+#Configure app and screte keys
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
-Bootstrap(app)
 
+
+#Configure Bootstrap and Login
+Bootstrap(app)
+login_manager = LoginManager(app)
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+#Configure sqlalchemy for user login
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://gnurgle:ALR6K66EAA@localhost/mtg_db'
+db = SQLAlchemy(app)
+Base = declarative_base()
+engine = create_engine('mysql://gnurgle:ALR6K66EAA@localhost/mtg_db')
+Base.metadata.reflect(engine)
+Session = sessionmaker(bind = engine)
+session = Session()
+
+#Login Form
+class LoginForm(FlaskForm):
+	username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
+	password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=30)])
+	remember = BooleanField('remember me')
+
+#Signup Form
+class RegisterForm(FlaskForm):
+	username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
+	email = StringField('email', validators=[InputRequired(), Length(max=30)])
+	password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=30)])
+	remember = BooleanField('remember me')
+#Class for Login DB
+class User(UserMixin, Base):
+	#User_Id = sa.Column(sa.String, primary_key=True)
+	#Email = sa.Column(sa.String)
+	#Password = sa.Column(sa.String)
+	__table__=Base.metadata.tables['Users']
+
+	def get_id(self):
+		return self.User_Id
+		
+@login_manager.user_loader
+def load_user(User_Id):
+	return session.query(User).get(User_Id)
+
+#Login
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+	form = LoginForm()
+
+	if form.validate_on_submit():
+		user = session.query(User).filter_by(User_Id=form.username.data).first()
+		if user.Password == form.password.data:
+			login_user(user, remember=form.remember.data)
+			return redirect(url_for('index'))
+
+		return '<h1>Bad User Login</h1>'
+			 
+	return render_template('login.html', form=form)
+
+#LogOut
+@app.route('/logout')
+@login_required
+def logout():
+	logout_user()
+	return redirect(url_for('index'))
+
+#Signup
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+	form = RegisterForm()
+
+	if form.validate_on_submit():
+		new_user = User(User_Id=form.username.data, Email=form.email.data, Password=form.password.data)
+		db.session.add(new_user)
+		db.session.commit()
+
+		return '<h1> New User has been created</h1>'
+		
+	return render_template('signup.html', form=form)
+	
 #Pack pass throughs
 @app.route("/")
 def index():
 
-	cards_list = make_pack_a("m19")
-	return render_template("index.html", cards = list(cards_list[1:]), info = list(cards_list[0])) 
+	return render_template("index.html") 
 
 @app.route("/warPack")
 def warPack():
@@ -29,6 +117,9 @@ def warPack():
 	cards_list = make_pack_a("war")
 	p_name = "warPack"
 	p_img = "/static/img/war.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/mh1Pack")
@@ -37,6 +128,9 @@ def mh1Pack():
 	cards_list = make_pack_a("mh1")
 	p_name = "mh1Pack"
 	p_img = "/static/img/mh1.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/rixPack")
@@ -45,6 +139,9 @@ def rixPack():
 	cards_list = make_pack_a("rix")
 	p_name = "rixPack"
 	p_img = "/static/img/rix.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 @app.route("/grnPack")
 def grnPack():
@@ -52,6 +149,9 @@ def grnPack():
 	cards_list = make_pack_a("grn")
 	p_name = "grnPack"
 	p_img = "/static/img/grn.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/rnaPack")
@@ -60,6 +160,9 @@ def rnaPack():
 	cards_list = make_pack_a("rna")
 	p_name = "rnaPack"
 	p_img = "/static/img/rna.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/bbdPack")
@@ -68,6 +171,9 @@ def bbdPack():
 	cards_list = make_pack_a("bbd")
 	p_name = "bbdPack"
 	p_img = "/static/img/bbd.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/umaPack")
@@ -76,6 +182,9 @@ def umaPack():
 	cards_list = make_pack_a("uma")
 	p_name = "umaPack"
 	p_img = "/static/img/uma.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/m19Pack")
@@ -84,6 +193,9 @@ def m19Pack():
 	cards_list = make_pack_a("m19")
 	p_name = "m19Pack"
 	p_img = "/static/img/m19.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/aerPack")
@@ -92,6 +204,9 @@ def aerPack():
 	cards_list = make_pack_a("aer")
 	p_name = "aerPack"
 	p_img = "/static/img/aer.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/domPack")
@@ -100,6 +215,9 @@ def domPack():
 	cards_list = make_pack_a("dom")
 	p_name = "domPack"
 	p_img = "/static/img/dom.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/xlnPack")
@@ -108,6 +226,9 @@ def xlnPack():
 	cards_list = make_pack_a("xln")
 	p_name = "xlnPack"
 	p_img = "/static/img/xln.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/thbPack")
@@ -116,6 +237,9 @@ def thbPack():
 	cards_list = make_pack_a("thb")
 	p_name = "thbPack"
 	p_img = "/static/img/thb.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/eldPack")
@@ -124,6 +248,9 @@ def eldPack():
 	cards_list = make_pack_a("eld")
 	p_name = "eldPack"
 	p_img = "/static/img/eld.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/m20Pack")
@@ -132,6 +259,9 @@ def m20Pack():
 	cards_list = make_pack_a("m20")
 	p_name = "m20Pack"
 	p_img = "/static/img/m20.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/a25Pack")
@@ -140,6 +270,9 @@ def a25Pack():
 	cards_list = make_pack_a("a25")
 	p_name = "a25Pack"
 	p_img = "/static/img/a25.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/imaPack")
@@ -148,6 +281,9 @@ def imaPack():
 	cards_list = make_pack_a("ima")
 	p_name = "imaPack"
 	p_img = "/static/img/ima.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/mm3Pack")
@@ -156,6 +292,9 @@ def mm3Pack():
 	cards_list = make_pack_a("mm3")
 	p_name = "mm3Pack"
 	p_img = "/static/img/mm3.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/oriPack")
@@ -164,6 +303,9 @@ def oriPack():
 	cards_list = make_pack_a("ori")
 	p_name = "oriPack"
 	p_img = "/static/img/ori.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/emaPack")
@@ -172,6 +314,9 @@ def emaPack():
 	cards_list = make_pack_a("ema")
 	p_name = "emaPack"
 	p_img = "/static/img/ema.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/ogwPack")
@@ -180,6 +325,9 @@ def ogwPack():
 	cards_list = make_pack_a("ogw")
 	p_name = "ogwPack"
 	p_img = "/static/img/ogw.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/mm2Pack")
@@ -188,6 +336,9 @@ def mm2Pack():
 	cards_list = make_pack_a("mm2")
 	p_name = "mm2Pack"
 	p_img = "/static/img/mm2.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/dtkPack")
@@ -196,6 +347,9 @@ def dtkPack():
 	cards_list = make_pack_a("dtk")
 	p_name = "dtkPack"
 	p_img = "/static/img/dtk.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/ktkPack")
@@ -204,6 +358,9 @@ def ktkPack():
 	cards_list = make_pack_a("ktk")
 	p_name = "ktkPack"
 	p_img = "/static/img/ktk.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
 @app.route("/m15Pack")
@@ -212,9 +369,14 @@ def m15Pack():
 	cards_list = make_pack_a("m15")
 	p_name = "m15Pack"
 	p_img = "/static/img/m15.jpg"
+	username = current_user.get_id()
+	if username != None:
+		addUserHistory(username,list(cards_list))
 	return render_template("pullPack.html", cards = list(cards_list[1:]), info = list(cards_list[0]), pack_image = p_img, pack_name = p_name) 
 
+#Pick A Pack to Open
 @app.route("/pickPack")
+#@login_required
 def pickPack():
 
 	return render_template("pickPack.html")
@@ -337,7 +499,7 @@ class Form(FlaskForm):
 	sets = SelectField('sets', choices=rows)
 	cards = SelectField('cards', choices=[(" ","-- Card Name --")])
 	#options = SelectField('options', choices=[(" ","-- Field to Change --")])
-	card_change = StringField('New value', [validators.InputRequired()])
+	card_change = StringField('New value', [InputRequired()])
 	
 
 #Admin page
