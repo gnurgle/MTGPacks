@@ -7,11 +7,14 @@ from makePack import make_pack_a
 from pullCard import fetch_card
 from updateSingle import  update_Single
 from fetch_prices import fetch_prices
-from writeHistory import addUserHistory
+from writeHistory import addUserHistory, removeHistory
 from pullHistory import userTotalPacks,userPacksByDay,userPacksBySet
 from pullHistory import userPacksBySetDay, userSetsOpened, userFoilRarity
 from pullHistory import userRarity, userEarning, userTotalSpent, userNumSetsOpened
 from pullHistory import userTotalSpent, userEarningByDate, userTotalSpentByDay
+from pullHistory import userPacksByDaySet, userFoilRarityBySet, userRarityBySet
+from pullHistory import userEarningByDateSet, userTotalSpentByDaySet
+from pullHistory import overallUserPacks, overallPacks
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms import SelectField, StringField, PasswordField, BooleanField
@@ -99,7 +102,7 @@ def signup():
 		db.session.add(new_user)
 		db.session.commit()
 
-		return '<h1> New User has been created</h1>'
+		return redirect(url_for('index'))
 		
 	return render_template('signup.html', form=form)
 	
@@ -627,15 +630,111 @@ def dash():
 
 	#Grab Sets
 	setsOpened = userSetsOpened(username)
-	print (setsOpened)
 
+	print (fR)
+	
+	if not fR:
+		fR =[('None'),(0)]
+	if not nR:
+		nR =[('None'),(0)]
 
 	return render_template('dashboard.html', packPerDay = pPD, \
 		numberSetsOpened = nSO, foilRarity = fR, normRarity = nR, earning=earn, \
 		spent=temp, profit=profit, conEarn = convertedEarn, sets = setsOpened)
 
+#Main User History 
+@app.route('/dashboard/<set>')
+@login_required
+def dashSet(set):
 
+	#Connect to DB
+	conn = sql.connect(
+		host="localhost",
+		user="gnurgle",
+		password="ALR6K66EAA",
+		database="mtg_db"
+	)
+	cur = conn.cursor()
+	cur.execute("SELECT Set_Name FROM Sets WHERE Set_Id = %s",(set,))
+	rows = cur.fetchone()
+	rows = str(rows)[2:-3]
+	sets = [(set),(rows)]
+	#Fetch Username
+	username = current_user.get_id()
 
+	#Grab Packs Per Day
+	packPerDay = userPacksByDaySet(username,set)
+	pPD = list(zip(*packPerDay))
+
+	#Get Foil Rarity for Chart
+	foilRarity = userFoilRarityBySet(username,set)
+	fR = list(zip(*foilRarity))
+
+	#Get Normal Rarity for Chart
+	normRarity = userRarityBySet(username,set)
+	nR = list(zip(*normRarity))
+
+	#Get Earnings
+	earning = userEarningByDateSet(username,set)
+	earn = list(zip(*earning))
+
+	#Get Spent
+	spent = userTotalSpentByDaySet(username,set)
+	spen = list(zip(*spent))
+	#Get Profitability
+	profit = []
+	convertedEarn = []
+	negativeSpen = []
+	for i in range(0,len(earning)):
+		negativeSpen.append(float(spen[0][i]) * -1.0)
+		convertedEarn.append(float(earn[0][i]) * 1.0)
+		profit.append(convertedEarn[i] + negativeSpen[i])
+
+	temp = []
+	temp.append(negativeSpen)
+	temp.append(convertedEarn)
+	temp.append(profit)
+
+	#Grab Sets
+	setsOpened = userSetsOpened(username)
+
+	if not fR:
+		fR =[('None'),(0)]
+	if not nR:
+		nR =[('None'),(0)]
+
+	
+	return render_template('setboard.html', packPerDay = pPD, \
+		foilRarity = fR, normRarity = nR, earning=earn, \
+		spent=temp, profit=profit, conEarn = convertedEarn, set=sets)
+
+#Leaderboard 
+@app.route('/Leaderboard')
+def leaderboard():
+	packRank = overallPacks()
+	userRank = overallUserPacks()
+
+	return render_template('leaderboard.html', packRank=packRank, userRank=userRank)
+
+#Profile 
+@app.route('/profile')
+@login_required
+def profile():
+	#Fetch Username
+	username = current_user.get_id()
+	print (username)
+	return render_template('profile.html', username=username)
+
+#Profile 
+@app.route('/removeHistory')
+@login_required
+def removeH():
+	#Fetch Username
+	username = current_user.get_id()
+
+	#Remove history
+	removeHistory(username)
+	return redirect(url_for('index'))
 
 
 if __name__ == "__main__":

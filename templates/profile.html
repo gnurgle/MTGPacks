@@ -51,8 +51,17 @@
 {% block content%}
 {{super()}}
 
+	<h1>{{username}}
+
+	</h1>
+	<div id= "card_button">
+	<a href="/removeHistory" class="btn btn-primary card_buton">Remove Pack History</a>
+	<div>
+	
 {% endblock %}
 {% block scripts %} 
 	{{super()}}	
+	<script src="/static/js/hover-flip.js"></script>
+	<script src="/static/js/jquery.countimator.min.js"></script>
 
 {% endblock %}

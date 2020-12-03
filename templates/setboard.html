@@ -54,15 +54,10 @@
 {{super()}}
 
 	<div style="margin-left:10%;margin-bottom:50px;width:80%;text-align:center">
-	<br>
-	<h1>Click Sets for Set Specific Stats</h1>
-		{% for set in sets %}
-		<a href="/dashboard/{{set[0]}}"><img border="0" src="/static/img/{{set[0]}}_logo.png" width="25%" height="auto">
+	<br><br>
+		<a href="/{{set[0]}}Pack"><img border="0" src="/static/img/{{set[0]}}_logo.png" width="50%" height="auto">
 		</a>
-		{% endfor %}
 	</div>
-
-
 	<div style="margin-left:10%;padding-bottom:50px;width:80%">
 		<div style="width:50%;height:450;float:left">
 		<canvas id="ppd" width="600" height="450"></canvas>
@@ -73,8 +68,9 @@
 		<div style="width:33%;height:auto;float:left">
 		<canvas id="fRare" width="600" height="450"></canvas>
 		</div>
-		<div style="width:33%;height:auto;float:left">
-		<canvas id="nSO" width="600" height="450"></canvas>
+		<div style="width:33%;float:left">
+		<a href="/{{set[0]}}Pack"><img border="0" src="/static/img/{{set[0]}}_pack.png" width="50%" height="auto">
+		</a>		
 		</div>
 		<div style="width:33%;height:auto;float:left">
 		<canvas id="nRare" width="600" height="450"></canvas>
@@ -100,28 +96,7 @@
   options: {
     title: {
       display: true,
-      text: 'Pack Opened Per Day'
-    }
-  }
-});
-	</script>
-	<script>
-	new Chart(document.getElementById("ppd2"), {
-  type: 'line',
-  data: {
-    labels: {{packPerDay[0]|tojson}},
-    datasets: [{ 
-        data: {{packPerDay[1]|tojson}},
-        label: "Packs opened",
-        borderColor: "#3e95cd",
-        fill: false
-      } 
-    ]
-  },
-  options: {
-    title: {
-      display: true,
-      text: 'Pack Opened Per Day'
+      text: '{{set[1]}} Packs Opened Per Day'
     }
   }
 });
@@ -142,28 +117,7 @@ new Chart(document.getElementById("fRare"), {
     options: {
       title: {
         display: true,
-        text: 'Foil Rarities pulled'
-      }
-    }
-});
-</script>
-<script>
-new Chart(document.getElementById("nSO"), {
-    type: 'doughnut',
-    data: {
-      labels: {{numberSetsOpened[0]|tojson}},
-      datasets: [
-        {
-          label: "Packs",
-          backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9"],
-          data: {{numberSetsOpened[1]|tojson}}
-        }
-      ]
-    },
-    options: {
-      title: {
-        display: true,
-        text: 'Packs Per Set'
+        text: '{{set[1]}} Foil Rarities pulled'
       }
     }
 });
@@ -184,7 +138,7 @@ new Chart(document.getElementById("nRare"), {
     options: {
       title: {
         display: true,
-        text: 'Rarities pulled'
+        text: '{{set[1]}} rarities pulled'
       }
     }
 });</script>
@@ -214,7 +168,7 @@ new Chart(document.getElementById("profit"), {
   options: {
     title: {
       display: true,
-      text: 'Overal Profitability'
+      text: '{{set[1]}} Profitability'
     }
   }
 });

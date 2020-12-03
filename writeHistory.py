@@ -57,7 +57,21 @@ def addUserHistory(username,data):
 
 	cur.close()
 	conn.close()
-	
+#Remove History
+def removeHistory(username):
+	conn = sql.connect(
+		host='localhost',
+		user='gnurgle',
+		password='ALR6K66EAA',
+		database='mtg_db'
+	)
+	print (username)
+	cur=conn.cursor()
+	cur.execute('DELETE FROM User_History WHERE User_Id = %s',(username,))
+	conn.commit()
+	cur.close()
+	conn.close()
+
 #Check if card was a Foil
 def cf(card):
 	if card == 'foil':

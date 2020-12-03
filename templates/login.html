@@ -1,6 +1,6 @@
 {% extends "bootstrap/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
-{% block title %}Test Display for Cards{% endblock %}
+{% block title %}MTG Packs{% endblock %}
 {% block styles %}
 {{super()}}
 	<link rel="stylesheet" href="/static/css/main_body.css">
@@ -19,31 +19,35 @@
       </button>
       
     </div>
-    <a class="navbar-brand" href="#">MTGPacks</a>
+    <a class="navbar-brand">MTGPacks</a>
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="navbar-collapse-1">
      
       <ul class="nav navbar-nav navbar-left">
         <li class="dropdown">
+         {% if current_user.is_authenticated %}
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">User <b class="caret"></b></a>
           <ul class="dropdown-menu">
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">History</a></li>
+            <li><a href="/profile">Profile</a></li>
+            <li><a href="/dashboard">History</a></li>
             <li class="divider"></li>
-            <li><a href="#">Logout</a></li>
+            <li><a href="/logout">Logout</a></li>
           </ul>
+          {% else %}
+	        <li><a href="/login">Login</a></li>
+	        <li><a href="/signUp">Signup</a></li>
+			{% endif %}
         </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><a href="/">Home</a></li>
-        <li><a href="#">News</a></li>
+        <li><a href="/news">News</a></li>
         <li><a href="/pickPack">Pick Packs</a></li>
-        <li><a href="#">Leaderboard</a></li>
+        <li><a href="/Leaderboard">Leaderboard</a></li>
       </ul>
     </div><!-- /.navbar-collapse -->
 </div><!-- /.navbar-container -->
 </nav>
-
 {% endblock %}
 {% block content%}
 {{super()}}

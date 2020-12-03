@@ -51,8 +51,23 @@
 {% block content%}
 {{super()}}
 
+	<div style="margin-left:30%;margin-bottom:10px;width:60%;text-align:left">
+	<h1>Ranking of Sets by Number of Packs Opened</h1>
+	{% for pack in packRank %}
+	<h2>#{{loop.index}}.({{pack[1]}}) <a href="/{{pack[0]}}Pack"><img border="0" src="/static/img/{{pack[0]}}_logo.png" width="60%" height="auto"></a></h2>
+	<br><br>
+	{% endfor %}
+
+	<h1>Top 5 Users by Number of Packs Opened</h1>
+	{% for user in userRank %}
+	<h2>#{{loop.index}}.({{user[1]}}) {{user[0]}}</h2>
+	<br><br>
+	{% endfor %}
+	</div>
 {% endblock %}
 {% block scripts %} 
 	{{super()}}	
+	<script src="/static/js/hover-flip.js"></script>
+	<script src="/static/js/jquery.countimator.min.js"></script>
 
 {% endblock %}
