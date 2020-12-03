@@ -8,6 +8,10 @@ from pullCard import fetch_card
 from updateSingle import  update_Single
 from fetch_prices import fetch_prices
 from writeHistory import addUserHistory
+from pullHistory import userTotalPacks,userPacksByDay,userPacksBySet
+from pullHistory import userPacksBySetDay, userSetsOpened, userFoilRarity
+from pullHistory import userRarity, userEarning, userTotalSpent, userNumSetsOpened
+from pullHistory import userTotalSpent, userEarningByDate, userTotalSpentByDay
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms import SelectField, StringField, PasswordField, BooleanField
@@ -17,10 +21,6 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-
-
-
-
 
 
 #Configure app and screte keys
@@ -55,11 +55,9 @@ class RegisterForm(FlaskForm):
 	email = StringField('email', validators=[InputRequired(), Length(max=30)])
 	password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=30)])
 	remember = BooleanField('remember me')
+
 #Class for Login DB
 class User(UserMixin, Base):
-	#User_Id = sa.Column(sa.String, primary_key=True)
-	#Email = sa.Column(sa.String)
-	#Password = sa.Column(sa.String)
 	__table__=Base.metadata.tables['Users']
 
 	def get_id(self):
@@ -546,7 +544,7 @@ def cards(setsid):
 		database="mtg_db"
 	)
 	cur = conn.cursor()
-	cur.execute("SELECT Scryfall_Id, Name FROM Card WHERE Set_Id = %s\
+	cur.execute("SELECT Scryfall_ Id, Name FROM Card WHERE Set_Id = %s\
 				ORDER BY Name,Number",(setsid,))
 	rows = cur.fetchall()
 	rows.insert(0,[" ", "-- Card Name --"])
@@ -580,6 +578,65 @@ def card_options():
 def new():
 
 	return render_template('news.html')
+
+#Main User History Dashboard
+@app.route('/dashboard')
+@login_required
+def dash():
+
+	#Fetch Username
+	username = current_user.get_id()
+
+	#Grab Packs Per Day
+	packPerDay = userPacksByDay(username)
+	pPD = list(zip(*packPerDay))
+
+	#Grab Sets
+	numSetsOpened = userNumSetsOpened(username)
+	nSO = list(zip(*numSetsOpened))
+
+	#Get Foil Rarity for Chart
+	foilRarity = userFoilRarity(username)
+	fR = list(zip(*foilRarity))
+
+	#Get Normal Rarity for Chart
+	normRarity = userRarity(username)
+	nR = list(zip(*normRarity))
+
+	#Get Earnings
+	earning = userEarningByDate(username)
+	earn = list(zip(*earning))
+
+	#Get Spent
+	spent = userTotalSpentByDay(username)
+	spen = list(zip(*spent))
+	print(earn)
+	#Get Profitability
+	profit = []
+	convertedEarn = []
+	negativeSpen = []
+	for i in range(0,len(earning)):
+		negativeSpen.append(float(spen[0][i]) * -1.0)
+		convertedEarn.append(float(earn[0][i]) * 1.0)
+		profit.append(convertedEarn[i] + negativeSpen[i])
+
+	temp = []
+	temp.append(negativeSpen)
+	temp.append(convertedEarn)
+	temp.append(profit)
+
+	#Grab Sets
+	setsOpened = userSetsOpened(username)
+	print (setsOpened)
+
+
+	return render_template('dashboard.html', packPerDay = pPD, \
+		numberSetsOpened = nSO, foilRarity = fR, normRarity = nR, earning=earn, \
+		spent=temp, profit=profit, conEarn = convertedEarn, sets = setsOpened)
+
+
+
+
 
 if __name__ == "__main__":
 	app.run(debug = True)
